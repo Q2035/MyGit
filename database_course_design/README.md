@@ -41,3 +41,19 @@
 - why 原因
 
 管理员提交的作业提交任务
+> Job
+- id 任务编号
+- job_description 任务描述（供前端使用）
+- originator 任务发起人
+- start_time 任务开始时间
+- submit_count 提交人数统计  
+- deadline 截止时间，到期自动关闭任务
+
+需要提交任务名单
+> Submit_Person
+- id 唯一编号
+- user_id 外键 参照User表
+- job_id 外键 指向Job的id
+- if_submit 作业是否提交完成
+- submit_time 提交时间
+- submit_filename 提交作业的作业名
