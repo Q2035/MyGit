@@ -13,6 +13,7 @@
 > User
 - id 主键
 - username 用户名 UNIQUE
+- password 密码
 - nickname 昵称
 - avatar 头像
 - email 邮箱
@@ -30,30 +31,35 @@
 - id 主键
 - user_id 外键 用户id
 - role_id 外键 角色id
-- description 保留字段
 
 黑名单用户
 > BlackList
 - id
 - user_id 外键 用户id
 - happen_time 发生时间
-- ipv4_address ip地址
-- why 原因
+- ip_address ip地址
+- reason 原因
 
 管理员提交的作业提交任务
 > Job
 - id 任务编号
 - job_description 任务描述（供前端使用）
-- originator 任务发起人
+- originator 外键 任务发起人
 - start_time 任务开始时间
-- submit_count 提交人数统计  
 - deadline 截止时间，到期自动关闭任务
+- submit_count
+- total_count
 
 需要提交任务名单
 > Submit_Person
 - id 唯一编号
 - user_id 外键 参照User表
 - job_id 外键 指向Job的id
-- if_submit 作业是否提交完成
+- if_submit
 - submit_time 提交时间
-- submit_filename 提交作业的作业名
+
+提交的任务的文件命名格式
+> file_name
+- id 唯一编号
+- jos_id 绑定任务编号
+- style 文件名格式
