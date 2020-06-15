@@ -19,7 +19,7 @@ public class User {
     private String nickname;
     private String avatar;
     private String email;
-    private AccountStatus accountStatus;
+    private Integer accountStatus;
     private String description;
 
     @Override
@@ -34,6 +34,14 @@ public class User {
                 ", accountStatus=" + accountStatus +
                 ", description='" + description + '\'' +
                 '}';
+    }
+
+    public Integer getAccountStatus() {
+        return accountStatus;
+    }
+
+    public void setAccountStatus(Integer accountStatus) {
+        this.accountStatus = accountStatus;
     }
 
     public String getPassword() {
@@ -82,14 +90,6 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public AccountStatus getAccountStatus() {
-        return accountStatus;
-    }
-
-    public void setAccountStatus(AccountStatus accountStatus) {
-        this.accountStatus = accountStatus;
     }
 
     public String getDescription() {

@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import top.hellooooo.jobsubmission.pojo.User;
 import top.hellooooo.jobsubmission.service.UserService;
 
+import javax.servlet.http.HttpSession;
+
 @RequestMapping("job/user")
 @Controller
 public class UserController {
@@ -17,8 +19,19 @@ public class UserController {
 
     @ResponseBody
     @RequestMapping("/authentication")
-    public User auth(@RequestParam("username")String username){
-        return userService.getUserByUsername(username);
+    public User auth(@RequestParam("username")String username,
+                     @RequestParam("password")String password,
+                     HttpSession session){
+        User user = userService.getUserByUsername(username);
+        if (user.getPassword().equals(password)){
+            user.setPassword(null);
+            session.setAttribute("user",user);
+        }else {
+
+        }
+
+
+        return user;
     }
 
 }
