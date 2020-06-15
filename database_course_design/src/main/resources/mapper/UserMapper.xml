@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="top.hellooooo.jobsubmission.mapper.UserMapper">
     <select id="getUserByUsername" parameterType="string" resultMap="userMap">
-        select user.* from j_user user ,j_role role,j_user_role user_role
+        select user.* from j_user user
         where username = #{username}
     </select>
 

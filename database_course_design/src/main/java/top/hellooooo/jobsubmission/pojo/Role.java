@@ -10,6 +10,10 @@ public class Role {
     private String roleName;
     private String roleDescription;
 
+    public final static String ADMIN = "admin";
+    public final static String STUDENT = "student";
+    public final static String MANAGER = "manager";
+
     @Override
     public String toString() {
         return "Role{" +

@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>LOGIN</title>
-</head>
 <body>
 <div style="position: center">
-    <form method="post" th:action="#{/job/user/authentication}">
+    <p th:text="${message}"></p>
+    <form method="post" th:action="@{/job/user/authentication}">
         username:<input name="username" type="text"/>
         <br/>
         password:<input name="password" type="password">

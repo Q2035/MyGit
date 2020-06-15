@@ -22,6 +22,8 @@ public class User {
     private Integer accountStatus;
     private String description;
 
+    private Role role;
+
     @Override
     public String toString() {
         return "User{" +
@@ -34,6 +36,14 @@ public class User {
                 ", accountStatus=" + accountStatus +
                 ", description='" + description + '\'' +
                 '}';
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public Integer getAccountStatus() {
