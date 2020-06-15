@@ -58,3 +58,16 @@ create table j_file_name(
     style varchar(20),
     foreign key(job_id) references j_job(id)
 );
+
+create table j_clazz(
+    id int primary key auto_increment,
+    clazz_name varchar(20)
+);
+
+create table j_user_clazz(
+    id int primary key auto_increment,
+    user_id int,
+    clazz_id int,
+    foreign key (user_id) references j_user(id),
+    foreign key (clazz_id) references j_clazz(id)
+)
