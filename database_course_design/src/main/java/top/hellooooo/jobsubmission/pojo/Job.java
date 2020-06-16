@@ -1,5 +1,7 @@
 package top.hellooooo.jobsubmission.pojo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
 
 public class Job {
@@ -7,7 +9,9 @@ public class Job {
     private String job_description;
     private Integer originator;
     private Date start_time;
-    private Date deadtime;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private Date deadline;
     private Integer submit_count;
     private Integer total_count;
 
@@ -18,7 +22,7 @@ public class Job {
                 ", job_description='" + job_description + '\'' +
                 ", originator=" + originator +
                 ", start_time=" + start_time +
-                ", deadtime=" + deadtime +
+                ", deadtime=" + deadline +
                 ", submit_count=" + submit_count +
                 ", total_count=" + total_count +
                 '}';
@@ -56,12 +60,12 @@ public class Job {
         this.start_time = start_time;
     }
 
-    public Date getDeadtime() {
-        return deadtime;
+    public Date getDeadline() {
+        return deadline;
     }
 
-    public void setDeadtime(Date deadtime) {
-        this.deadtime = deadtime;
+    public void setDeadline(Date deadline) {
+        this.deadline = deadline;
     }
 
     public Integer getSubmit_count() {

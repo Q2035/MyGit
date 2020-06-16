@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>JOB</title>
+</head>
+<body>
+<h1>JOB</h1>
+<div style="position: center">
+    <form th:action="@{/job/manager/jobadd}" th:object="${job}" method="post">
+        job descriptin:<input type="text" name="job_description"/>
+        deadline(data and time):<input type="datetime-local" name="deadline"/>
+        <input type="submit" value="submit"/>
+    </form>
+</div>
+
+<a th:href="@{/job/manager/jobupdate}">jobupdate</a>
+<a th:href="@{/job/manager/delete}">delete</a>
+
+</body>
+</html>

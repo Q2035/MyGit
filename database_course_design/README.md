@@ -82,9 +82,9 @@ URL
 | /job/manager/index                            | Get    | 用户管理员主界面     |
 | /job/manager/jobrelease                       | Get    | 管理员发布任务界面   |
 | /job/manager/download                         | Post   | 管理员下载文件       |
-| /job/manager/jobupdate                        | Get    | 管理员发布或更新任务 |
-| /job/manager/jobdelete                        | Get    | 管理员删除任务       |
-| /job/manager/jobshow                          | Get    | 管理员展示任务界面   |
+| /job/manager/jobupdate/{id}                   | Get    | 管理员发布或更新任务 |
+| /job/manager/jobdelete/{id}                   | Get    | 管理员删除任务       |
+| /job/manager/jobinfo                          | Get    | 管理员展示任务界面   |
 | /job/manager/studentimportview                | Get    | 导入学生信息界面     |
 | /job/manager/studentimport                    | Post   | 导入学生信息         |
 | /job/manager/clazzimport                      | Post   | 创建班级信息         |

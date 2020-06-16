@@ -68,7 +68,7 @@ public class UserController {
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.removeAttribute("user");
-        return "index";
+        return "/user/index";
     }
 
 }

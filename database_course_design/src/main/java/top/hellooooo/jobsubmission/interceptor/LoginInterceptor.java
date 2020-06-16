@@ -16,7 +16,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
         if (sessionUser == null) {
             flag = false;
         }
-        response.sendRedirect("/job/index");
+        response.sendRedirect("/job/user/index");
         return flag;
     }
 }
