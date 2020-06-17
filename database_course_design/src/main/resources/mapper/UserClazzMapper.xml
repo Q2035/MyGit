@@ -6,7 +6,7 @@
     </select>
 
     <select id="getClazzById" parameterType="string" resultType="Clazz">
-        select * from j_clazz where id in (#{ids})
+        select * from j_clazz where id in (${ids})
     </select>
 
     <select id="getUserByClazzId" parameterType="string" resultType="SubmitPerson">

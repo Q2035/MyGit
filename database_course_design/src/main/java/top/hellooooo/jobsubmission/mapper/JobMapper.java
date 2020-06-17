@@ -12,4 +12,6 @@ public interface JobMapper {
 
 //    新建作业后,重新从DB获取ID
     Job getJobAfterInsert(Integer user_id);
+
+    List<Job> getUnexpiredJobs();
 }

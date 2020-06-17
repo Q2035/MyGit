@@ -34,9 +34,6 @@ public class ManagerController {
     @Autowired
     private JobService jobService;
 
-    @Autowired
-    private ExecutorUtil executorUtil;
-
     public SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -51,7 +48,7 @@ public class ManagerController {
      * @param model
      * @return
      */
-    @GetMapping("/jobinfo")
+    @GetMapping("/jobadd")
     public String jobShow(Model model){
         List<Clazz> allClazz = userClazzService.getAllClazz();
         model.addAttribute("allclazz",allClazz);
@@ -83,9 +80,9 @@ public class ManagerController {
 //            将Job信息插入数据库
             jobService.jobAdd(job);
 //            将Job学生信息插入数据库
-            List<User> userByClazzId = userClazzService.getUserByClazzId(clazz);
+            List<SubmitPerson> userByClazzId = userClazzService.getUserByClazzId(clazz);
             List<SubmitPerson> submitPersonList = new ArrayList<>();
-            for (User user : userByClazzId) {
+            for (SubmitPerson user : userByClazzId) {
                 SubmitPerson e = new SubmitPerson();
                 e.setIfSubmit(false);
 //                无法获取JobID
@@ -100,7 +97,7 @@ public class ManagerController {
             e.printStackTrace();
         }
         model.addAttribute("result", result);
-        return "manager/job";
+        return "redirect:/manager/index";
     }
 
     /**

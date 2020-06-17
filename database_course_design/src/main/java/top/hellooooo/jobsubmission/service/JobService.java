@@ -11,4 +11,6 @@ public interface JobService {
     void insertJobSubmitPerson(List<SubmitPerson> personList);
 
     Job getJobAfterInsert(Integer user_id);
+
+    List<Job> getUnexpiredJobs();
 }

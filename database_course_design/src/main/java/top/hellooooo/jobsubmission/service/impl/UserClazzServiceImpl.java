@@ -30,7 +30,7 @@ public class UserClazzServiceImpl implements UserClazzService {
     }
 
     @Override
-    public List<User> getUserByClazzId(String ids) {
+    public List<SubmitPerson> getUserByClazzId(String ids) {
         return userClazzMapper.getUserByClazzId(ids);
     }
 }
