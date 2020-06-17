@@ -1,31 +1,29 @@
 package top.hellooooo.jobsubmission.pojo;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
 
 public class Job {
     private Integer id;
-    private String job_description;
+    private String jobDescription;
     private Integer originator;
-    private Date start_time;
+//    作业开始时间
+    private Date startTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date deadline;
-    private Integer submit_count;
-    private Integer total_count;
+    private Integer submitCount;
+    private Integer totalCount;
 
-    @Override
-    public String toString() {
-        return "Job{" +
-                "id=" + id +
-                ", job_description='" + job_description + '\'' +
-                ", originator=" + originator +
-                ", start_time=" + start_time +
-                ", deadtime=" + deadline +
-                ", submit_count=" + submit_count +
-                ", total_count=" + total_count +
-                '}';
+//    作业发布时间
+    private Date submitTime;
+
+
+    public Date getSubmitTime() {
+        return submitTime;
+    }
+
+    public void setSubmitTime(Date submitTime) {
+        this.submitTime = submitTime;
     }
 
     public Integer getId() {
@@ -36,12 +34,12 @@ public class Job {
         this.id = id;
     }
 
-    public String getJob_description() {
-        return job_description;
+    public String getJobDescription() {
+        return jobDescription;
     }
 
-    public void setJob_description(String job_description) {
-        this.job_description = job_description;
+    public void setJobDescription(String jobDescription) {
+        this.jobDescription = jobDescription;
     }
 
     public Integer getOriginator() {
@@ -52,12 +50,12 @@ public class Job {
         this.originator = originator;
     }
 
-    public Date getStart_time() {
-        return start_time;
+    public Date getStartTime() {
+        return startTime;
     }
 
-    public void setStart_time(Date start_time) {
-        this.start_time = start_time;
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
     }
 
     public Date getDeadline() {
@@ -68,19 +66,19 @@ public class Job {
         this.deadline = deadline;
     }
 
-    public Integer getSubmit_count() {
-        return submit_count;
+    public Integer getSubmitCount() {
+        return submitCount;
     }
 
-    public void setSubmit_count(Integer submit_count) {
-        this.submit_count = submit_count;
+    public void setSubmitCount(Integer submitCount) {
+        this.submitCount = submitCount;
     }
 
-    public Integer getTotal_count() {
-        return total_count;
+    public Integer getTotalCount() {
+        return totalCount;
     }
 
-    public void setTotal_count(Integer total_count) {
-        this.total_count = total_count;
+    public void setTotalCount(Integer totalCount) {
+        this.totalCount = totalCount;
     }
 }

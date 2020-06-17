@@ -6,12 +6,12 @@
         where username = #{username}
     </select>
 
-    <select id="getRoleByUserID" resultType="top.hellooooo.jobsubmission.pojo.Role">
+    <select id="getRoleByUserID" resultType="Role">
         select role.* from j_role role,j_user_role user_role
         where user_role.id = #{id} and role.id = user_role.id
     </select>
 
-    <resultMap id="userMap" type="top.hellooooo.jobsubmission.pojo.User">
+    <resultMap id="userMap" type="User">
         <id property="id" column="id"/>
         <association property="role" column="id" select="getRoleByUserID"/>
     </resultMap>

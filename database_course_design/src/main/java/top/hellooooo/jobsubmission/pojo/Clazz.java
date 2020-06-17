@@ -3,6 +3,16 @@ package top.hellooooo.jobsubmission.pojo;
 public class Clazz {
     private Integer id;
     private String clazzName;
+//    班级人数
+    private Integer totalCount;
+
+    public Integer getTotalCount() {
+        return totalCount;
+    }
+
+    public void setTotalCount(Integer totalCount) {
+        this.totalCount = totalCount;
+    }
 
     public Integer getId() {
         return id;

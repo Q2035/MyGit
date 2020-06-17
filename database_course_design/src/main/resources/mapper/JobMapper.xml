@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="top.hellooooo.jobsubmission.mapper.JobMapper">
+    <insert id="getAllClazz" parameterType="Job">
+        insert into j_job(job_description, originator, start_time, deadline, submit_count, total_count)
+        values(#{job_description}, #{originator}, #{start_time}, #{deadline}, #{submit_count}, #{total_count})
+    </insert>
 
+<!--    将需要提交作业的用户插入数据库-->
+    <insert id="insertJobSubmitPerson" parameterType="SubmitPerson">
+        insert into j_submit_person(user_id, job_id)
+        values
+        <foreach collection="list" item="each" separator=",">
+            (#{item.user_id}, #{item.job_id})
+        </foreach>
+    </insert>
 </mapper>

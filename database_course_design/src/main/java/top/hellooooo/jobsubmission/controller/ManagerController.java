@@ -10,13 +10,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import top.hellooooo.jobsubmission.pojo.Clazz;
 import top.hellooooo.jobsubmission.pojo.Job;
+import top.hellooooo.jobsubmission.pojo.SubmitPerson;
 import top.hellooooo.jobsubmission.pojo.User;
+import top.hellooooo.jobsubmission.service.JobService;
 import top.hellooooo.jobsubmission.service.UserClazzService;
 import top.hellooooo.jobsubmission.util.CommonResult;
+import top.hellooooo.jobsubmission.util.ExecutorUtil;
 
 import javax.servlet.http.HttpSession;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +30,12 @@ public class ManagerController {
 
     @Autowired
     private UserClazzService userClazzService;
+
+    @Autowired
+    private JobService jobService;
+
+    @Autowired
+    private ExecutorUtil executorUtil;
 
     public SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -60,16 +70,38 @@ public class ManagerController {
             Date parse = simpleDateFormat.parse(deadline);
 //            实例化Job，将发起人、开始、结束时间等放入
             Job job = new Job();
-            job.setStart_time(new Date());
+            job.setStartTime(new Date());
             job.setDeadline(parse);
             job.setOriginator(((User)session.getAttribute("user")).getId());
-            job.setJob_description(job_description);
-
+            job.setJobDescription(job_description);
+            job.setSubmitCount(0);
+//            从数据库获取选中班级的总人数
+            List<Clazz> clazzById = userClazzService.getClazzById(clazz);
+//            这个不能为0，应该直接接用班级人数
+            job.setSubmitCount(0);
+            job.setTotalCount(clazzById.stream().mapToInt(Clazz::getTotalCount).sum());
+//            将Job信息插入数据库
+            jobService.jobAdd(job);
+//            将Job学生信息插入数据库
+            List<User> userByClazzId = userClazzService.getUserByClazzId(clazz);
+            List<SubmitPerson> submitPersonList = new ArrayList<>();
+            for (User user : userByClazzId) {
+                SubmitPerson e = new SubmitPerson();
+                e.setIfSubmit(false);
+//                无法获取JobID
+                e.setJobId(job.getId());
+                e.setUserId(user.getId());
+                submitPersonList.add(e);
+            }
         } catch (ParseException e) {
             result.setMessage("Error! The deadline is illegal!");
             e.printStackTrace();
         }
         model.addAttribute("result", result);
         return "manager/job";
+    }
+
+    Integer getJobIdAfterInsert(HttpSession session) {
+        return null;
     }
 }
