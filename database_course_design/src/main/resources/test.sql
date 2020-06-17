@@ -42,6 +42,7 @@ create table j_job(
     total_count int
 );
 
+# 有问题，不应该这样
 create table j_submit_person(
     id int primary key auto_increment,
     user_id int,
@@ -51,6 +52,17 @@ create table j_submit_person(
     foreign key(user_id) references j_user(id),
     foreign key(job_id) references j_job(id)
 );
+
+create table j_job_participants(
+    id int primary key auto_increment,
+    user_id int,
+    job_id int,
+    if_submit bool,
+    submit_time datetime,
+    foreign key(user_id) references j_user(id),
+    foreign key(job_id) references j_job(id)
+);
+
 
 create table j_file_name(
     id int primary key auto_increment,

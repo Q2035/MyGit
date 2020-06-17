@@ -2,7 +2,7 @@ package top.hellooooo.jobsubmission.pojo;
 
 public class Clazz {
     private Integer id;
-    private String className;
+    private String clazzName;
 
     public Integer getId() {
         return id;
@@ -12,11 +12,11 @@ public class Clazz {
         this.id = id;
     }
 
-    public String getClassName() {
-        return className;
+    public String getClazzName() {
+        return clazzName;
     }
 
-    public void setClassName(String className) {
-        this.className = className;
+    public void setClazzName(String className) {
+        this.clazzName = className;
     }
 }

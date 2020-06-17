@@ -2,24 +2,30 @@ package top.hellooooo.jobsubmission.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import top.hellooooo.jobsubmission.pojo.Clazz;
 import top.hellooooo.jobsubmission.pojo.Job;
 import top.hellooooo.jobsubmission.pojo.User;
+import top.hellooooo.jobsubmission.service.UserClazzService;
 import top.hellooooo.jobsubmission.util.CommonResult;
 
 import javax.servlet.http.HttpSession;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @Controller
 @RequestMapping("/job/manager")
 public class ManagerController {
+
+    @Autowired
+    private UserClazzService userClazzService;
 
     public SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -37,7 +43,8 @@ public class ManagerController {
      */
     @GetMapping("/jobinfo")
     public String jobShow(Model model){
-
+        List<Clazz> allClazz = userClazzService.getAllClazz();
+        model.addAttribute("allclazz",allClazz);
         return "/manager/job";
     }
 
@@ -46,6 +53,7 @@ public class ManagerController {
     public String jobadd(String deadline,
                          String job_description,
                          Model model,
+                         String clazz,
                          HttpSession session) {
         CommonResult result = new CommonResult();
         try {
