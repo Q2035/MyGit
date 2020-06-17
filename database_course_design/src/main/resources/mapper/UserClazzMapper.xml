@@ -11,6 +11,6 @@
 
     <select id="getUserByClazzId" parameterType="string" resultType="SubmitPerson">
         select * from j_user user join j_user_clazz clazz on
-        user.id = clazz.user_id and clazz.clazz_id in (#{ids})
+        user.id = clazz.user_id and clazz.clazz_id in (${ids})
     </select>
 </mapper>

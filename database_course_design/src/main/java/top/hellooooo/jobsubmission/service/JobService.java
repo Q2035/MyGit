@@ -9,4 +9,6 @@ public interface JobService {
     void jobAdd(Job job);
 
     void insertJobSubmitPerson(List<SubmitPerson> personList);
+
+    Job getJobAfterInsert(Integer user_id);
 }

@@ -6,6 +6,12 @@
         values(#{job_description}, #{originator}, #{start_time}, #{deadline}, #{submit_count}, #{total_count})
     </insert>
 
+<!--    将Job对象插入数据库-->
+    <insert id="jobAdd" parameterType="Job">
+        insert into j_job(job_description, originator, start_time, deadline, submit_count, total_count, submit_time)
+        values (#{jobDescription},#{originator},#{startTime},#{deadline},#{submitCount},#{totalCount},#{submitTime})
+    </insert>
+
 <!--    将需要提交作业的用户插入数据库-->
     <insert id="insertJobSubmitPerson" parameterType="SubmitPerson">
         insert into j_submit_person(user_id, job_id)
@@ -14,4 +20,9 @@
             (#{item.user_id}, #{item.job_id})
         </foreach>
     </insert>
+
+<!--    返回新插入的Job，为了获取Job_ID-->
+    <select id="getJobAfterInsert" parameterType="int" resultType="Job">
+        select * from j_job where originator = #{user_id};
+    </select>
 </mapper>

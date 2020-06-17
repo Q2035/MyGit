@@ -89,10 +89,12 @@ public class ManagerController {
                 SubmitPerson e = new SubmitPerson();
                 e.setIfSubmit(false);
 //                无法获取JobID
-                e.setJobId(job.getId());
+                e.setJobId(getJobIdAfterInsert(session));
                 e.setUserId(user.getId());
                 submitPersonList.add(e);
             }
+//            将生成的对象插入数据库
+            jobService.insertJobSubmitPerson(submitPersonList);
         } catch (ParseException e) {
             result.setMessage("Error! The deadline is illegal!");
             e.printStackTrace();
@@ -101,7 +103,16 @@ public class ManagerController {
         return "manager/job";
     }
 
+    /**
+     * 根据Session中的用户ID返回刚刚创建的Job对象ID
+     * @param session
+     * @return
+     */
     Integer getJobIdAfterInsert(HttpSession session) {
-        return null;
+        synchronized (ManagerController.class) {
+            User user = (User) session.getAttribute("user");
+            Job jobAfterInsert = jobService.getJobAfterInsert(user.getId());
+            return jobAfterInsert.getId();
+        }
     }
 }

@@ -24,4 +24,9 @@ public class JobServiceImpl implements JobService {
     public void insertJobSubmitPerson(List<SubmitPerson> personList) {
         jobMapper.insertJobSubmitPerson(personList);
     }
+
+    @Override
+    public Job getJobAfterInsert(Integer user_id) {
+        return jobMapper.getJobAfterInsert(user_id);
+    }
 }

@@ -26,7 +26,7 @@ public class UserClazzServiceImpl implements UserClazzService {
 
     @Override
     public List<Clazz> getClazzById(String ids) {
-        return getClazzById(ids);
+        return userClazzMapper.getClazzById(ids);
     }
 
     @Override
