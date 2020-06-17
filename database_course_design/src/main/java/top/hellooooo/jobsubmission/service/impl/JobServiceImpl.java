@@ -29,4 +29,9 @@ public class JobServiceImpl implements JobService {
     public Job getJobAfterInsert(Integer user_id) {
         return jobMapper.getJobAfterInsert(user_id);
     }
+
+    @Override
+    public List<Job> getUnexpiredJobs() {
+        return jobMapper.getUnexpiredJobs();
+    }
 }

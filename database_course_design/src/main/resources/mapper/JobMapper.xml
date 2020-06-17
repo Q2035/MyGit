@@ -25,4 +25,10 @@
     <select id="getJobAfterInsert" parameterType="int" resultType="Job">
         select * from j_job where originator = #{user_id} order by submit_time desc limit 1;
     </select>
+
+<!--    需要注意，开始时间就不能是0了-->
+    <select id="getUnexpiredJobs" resultType="Job">
+        select * from j_job where unix_timestamp(deadline) < unix_timestamp(now())
+            and unix_timestamp(start_time) >= unix_timestamp(now()) limit 30;
+    </select>
 </mapper>
