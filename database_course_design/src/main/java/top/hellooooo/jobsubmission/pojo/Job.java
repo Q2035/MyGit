@@ -17,7 +17,6 @@ public class Job {
 //    作业发布时间
     private Date submitTime;
 
-
     public Date getSubmitTime() {
         return submitTime;
     }

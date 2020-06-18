@@ -1,21 +1,29 @@
 package top.hellooooo.jobsubmission.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import top.hellooooo.jobsubmission.pojo.Job;
 import top.hellooooo.jobsubmission.pojo.Role;
 import top.hellooooo.jobsubmission.pojo.User;
 import top.hellooooo.jobsubmission.service.JobService;
 import top.hellooooo.jobsubmission.service.UserService;
+import top.hellooooo.jobsubmission.util.CommonResult;
 import top.hellooooo.jobsubmission.util.IndexUtil;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 @RequestMapping("job/user")
@@ -30,6 +38,11 @@ public class UserController {
 
     @Autowired
     private JobService jobService;
+
+    @Value("${file.basepath}")
+    private String publicBasePath;
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * 登录认证
@@ -82,4 +95,44 @@ public class UserController {
         return "/user/index";
     }
 
+    @GetMapping("/fileupload")
+    public String upload(){
+        return "/user/jobupload";
+    }
+
+    /**
+     * 上传文件
+     * @return
+     */
+    @PostMapping("/fileupload")
+    public CommonResult fileUpload(MultipartFile file,
+                                   HttpServletRequest request){
+        CommonResult result = new CommonResult();
+        if (file.isEmpty()){
+            logger.warn("{} upload an empty file.",request.getRemoteAddr());
+        }
+        String fileName = file.getOriginalFilename();
+        String contentType = file.getContentType();
+        logger.info("upload name:{} type:{}",fileName, contentType);
+        String filePath;
+        filePath = publicBasePath + fileName;
+        File dest = new File(filePath);
+//        查看是否存在目录
+        if (!dest.getParentFile().exists()){
+            dest.getParentFile().mkdirs();
+        }
+        try {
+            file.transferTo(dest);
+        } catch (IOException e) {
+            logger.error("upload error!");
+            e.printStackTrace();
+            result.setMessage("upload error!");
+            result.setSuccess(false);
+            return result;
+        }
+        result.setMessage("Success!");
+        result.setSuccess(true);
+        logger.info(result.toString());
+        return result;
+    }
 }

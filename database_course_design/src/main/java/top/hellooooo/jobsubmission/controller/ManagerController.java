@@ -41,24 +41,26 @@ public class ManagerController {
 
     /**
      * 跳转到job页面
-     *  包含：
-     *      所有发布的Job信息
-     *      Job新增链接
-     *      Job删除链接
-     *      Job修改链接
+     * 包含：
+     * 所有发布的Job信息
+     * Job新增链接
+     * Job删除链接
+     * Job修改链接
+     *
      * @param model
      * @return
      */
     @GetMapping("/jobadd")
-    public String jobShow(Model model){
+    public String jobShow(Model model) {
         List<Clazz> allClazz = userClazzService.getAllClazz();
-        model.addAttribute("allclazz",allClazz);
+        model.addAttribute("allclazz", allClazz);
         return "/manager/job";
     }
 
 
     /**
      * Job发布
+     *
      * @param deadline
      * @param job_description
      * @param model
@@ -81,7 +83,7 @@ public class ManagerController {
 //            设置Job提交时间
             job.setSubmitTime(new Date());
             job.setDeadline(parse);
-            job.setOriginator(((User)session.getAttribute("user")).getId());
+            job.setOriginator(((User) session.getAttribute("user")).getId());
             job.setJobDescription(job_description);
             job.setSubmitCount(0);
 //            从数据库获取选中班级的总人数
@@ -113,22 +115,22 @@ public class ManagerController {
     }
 
     /**
-     *
-     * @param id Job的ID
+     * @param id    Job的ID
      * @param model
      * @return
      */
     @GetMapping("/jobinfo/{id}")
-    public String jobInfo(@PathVariable("id")Integer id,
-                          Model model){
+    public String jobInfo(@PathVariable("id") Integer id,
+                          Model model) {
         List<User> users = jobService.getUnsubmitUser(id);
-        model.addAttribute("unSubmitUsers",users);
+        model.addAttribute("unSubmitUsers", users);
         return "manager/jobinfo";
     }
 
 
     /**
      * 根据Session中的用户ID返回刚刚创建的Job对象ID
+     *
      * @param session
      * @return
      */
@@ -139,4 +141,5 @@ public class ManagerController {
             return jobAfterInsert.getId();
         }
     }
+
 }
