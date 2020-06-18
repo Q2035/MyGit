@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import top.hellooooo.jobsubmission.mapper.JobMapper;
 import top.hellooooo.jobsubmission.pojo.Job;
 import top.hellooooo.jobsubmission.pojo.SubmitPerson;
+import top.hellooooo.jobsubmission.pojo.User;
 import top.hellooooo.jobsubmission.service.JobService;
 
 import java.util.List;
@@ -33,5 +34,10 @@ public class JobServiceImpl implements JobService {
     @Override
     public List<Job> getUnexpiredJobs() {
         return jobMapper.getUnexpiredJobs();
+    }
+
+    @Override
+    public List<User> getUnsubmitUser(Integer id) {
+        return jobMapper.getUnsubmitUser(id);
     }
 }

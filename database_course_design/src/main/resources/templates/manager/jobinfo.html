@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>JOBINFO</title>
+</head>
+<body>
+<h1>JOBINFO</h1>
+<table border="1" th:if="${unSubmitUsers != null}">
+    <tr>
+        <td>count</td>
+        <td>username</td>
+    </tr>
+    <th:block th:each="user,step:${unSubmitUsers}">
+        <tr>
+            <td th:text="${step.count}"></td>
+            <td th:text="${user.username}"></td>
+        </tr>
+    </th:block>
+</table>
+</body>
+</html>

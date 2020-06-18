@@ -7,7 +7,7 @@
 <body>
 <h1>MANAGER INDEX</h1>
 <h2>All unmet deadlines</h2>
-<table>
+<table border="1" th:if="${jobs != null}">
     <tr>
         <td>Job Des</td>
         <td>Job's Deadline</td>
@@ -16,7 +16,7 @@
     </tr>
     <th:block th:each="job:${jobs}">
         <tr>
-            <td th:text="${job.jobDescription}"></td>
+            <td><a th:text="${job.jobDescription}" th:href="@{/job/manager/jobinfo/{id}(id=${job.id})}"></a></td>
             <td th:text="${job.deadline}"></td>
             <td th:text="${job.submitCount}"></td>
             <td th:text="${job.totalCount}"></td>

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import top.hellooooo.jobsubmission.pojo.Clazz;
@@ -17,6 +18,7 @@ import top.hellooooo.jobsubmission.service.UserClazzService;
 import top.hellooooo.jobsubmission.util.CommonResult;
 
 import javax.servlet.http.HttpSession;
+import javax.websocket.server.PathParam;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -76,6 +78,8 @@ public class ManagerController {
 //            实例化Job，将发起人、开始、结束时间等放入
             Job job = new Job();
             job.setStartTime(new Date());
+//            设置Job提交时间
+            job.setSubmitTime(new Date());
             job.setDeadline(parse);
             job.setOriginator(((User)session.getAttribute("user")).getId());
             job.setJobDescription(job_description);
@@ -105,8 +109,23 @@ public class ManagerController {
             e.printStackTrace();
         }
         model.addAttribute("result", result);
-        return "/manager/jobshow";
+        return "/manager/index";
     }
+
+    /**
+     *
+     * @param id Job的ID
+     * @param model
+     * @return
+     */
+    @GetMapping("/jobinfo/{id}")
+    public String jobInfo(@PathVariable("id")Integer id,
+                          Model model){
+        List<User> users = jobService.getUnsubmitUser(id);
+        model.addAttribute("unSubmitUsers",users);
+        return "manager/jobinfo";
+    }
+
 
     /**
      * 根据Session中的用户ID返回刚刚创建的Job对象ID
