@@ -40,4 +40,9 @@ public class JobServiceImpl implements JobService {
     public List<User> getUnsubmitUser(Integer id) {
         return jobMapper.getUnsubmitUser(id);
     }
+
+    @Override
+    public List<Job> getCurrentJobByUserId(Integer userId) {
+        return jobMapper.getCurrentJobByUserId(userId);
+    }
 }

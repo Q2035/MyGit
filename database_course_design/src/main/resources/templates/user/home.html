@@ -6,6 +6,21 @@
 </head>
 <body>
 <h1>USER HOME</h1>
+<h2>Current tasks that need to be completed</h2>
+<table border="1" th:if="${jobs != null}">
+    <tr>
+        <td>count</td>
+        <td>job description</td>
+        <td>deadline</td>
+    </tr>
+    <th:block th:each="job,step:${jobs}">
+        <tr>
+            <td th:text="${step.count}"></td>
+            <td th:text="${job.jobDescription}"></td>
+            <td th:text="${job.deadline}" style="color: red"></td>
+        </tr>
+    </th:block>
+</table>
 <a th:href="@{/job/user/logout}">logout</a>
 </body>
 </html>

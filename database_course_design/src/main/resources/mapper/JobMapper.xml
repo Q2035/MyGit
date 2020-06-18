@@ -38,4 +38,9 @@
         select user.* from j_user user, j_submit_person person where
         user.id = person.user_id and person.job_id = #{id} and person.if_submit is null
     </select>
+
+    <select id="getCurrentJobByUserId" parameterType="int" resultType="Job">
+        select job.* from j_job job join j_submit_person person on person.job_id = job.id
+        and person.user_id = #{userId}
+    </select>
 </mapper>

@@ -16,4 +16,6 @@ public interface JobService {
     List<Job> getUnexpiredJobs();
 
     List<User> getUnsubmitUser(Integer id);
+
+    List<Job> getCurrentJobByUserId(Integer userId);
 }

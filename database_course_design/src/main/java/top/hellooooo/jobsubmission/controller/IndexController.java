@@ -33,6 +33,9 @@ public class IndexController {
             if (urlByUser.contains(Role.MANAGER)) {
                 List<Job> jobs = jobService.getUnexpiredJobs();
                 model.addAttribute("jobs",jobs);
+            } else if (urlByUser.contains(Role.STUDENT)) {
+                List<Job> jobs = jobService.getCurrentJobByUserId(((User) user).getId());
+                model.addAttribute("jobs",jobs);
             }
             return urlByUser;
         }
