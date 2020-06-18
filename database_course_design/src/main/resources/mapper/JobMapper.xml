@@ -28,7 +28,9 @@
 
 <!--    需要注意，开始时间就不能是0了-->
     <select id="getUnexpiredJobs" resultType="Job">
-        select * from j_job where unix_timestamp(deadline) < unix_timestamp(now())
-            and unix_timestamp(start_time) >= unix_timestamp(now()) limit 30;
+        select * from j_job where unix_timestamp(deadline) &lt; unix_timestamp(now())
+#             这里需要保证start_time不是null
+#             and unix_timestamp(start_time) >= unix_timestamp(now())
+        limit 30;
     </select>
 </mapper>

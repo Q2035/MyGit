@@ -15,7 +15,6 @@ import top.hellooooo.jobsubmission.pojo.User;
 import top.hellooooo.jobsubmission.service.JobService;
 import top.hellooooo.jobsubmission.service.UserClazzService;
 import top.hellooooo.jobsubmission.util.CommonResult;
-import top.hellooooo.jobsubmission.util.ExecutorUtil;
 
 import javax.servlet.http.HttpSession;
 import java.text.ParseException;
@@ -56,6 +55,15 @@ public class ManagerController {
     }
 
 
+    /**
+     * Job发布
+     * @param deadline
+     * @param job_description
+     * @param model
+     * @param clazz
+     * @param session
+     * @return
+     */
     @PostMapping("/jobadd")
     public String jobadd(String deadline,
                          String job_description,
@@ -97,7 +105,7 @@ public class ManagerController {
             e.printStackTrace();
         }
         model.addAttribute("result", result);
-        return "redirect:/manager/index";
+        return "/manager/jobshow";
     }
 
     /**

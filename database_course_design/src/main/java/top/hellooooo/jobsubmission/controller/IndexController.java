@@ -4,12 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import top.hellooooo.jobsubmission.pojo.Job;
 import top.hellooooo.jobsubmission.pojo.Role;
 import top.hellooooo.jobsubmission.pojo.User;
 import top.hellooooo.jobsubmission.service.JobService;
 import top.hellooooo.jobsubmission.util.IndexUtil;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @RequestMapping("/job")
 @Controller
@@ -28,8 +30,9 @@ public class IndexController {
         Object user = session.getAttribute("user");
         if (user != null) {
             String urlByUser = indexUtil.getURLByUser((User) user);
-            if (urlByUser.equals(Role.MANAGER)) {
-                
+            if (urlByUser.contains(Role.MANAGER)) {
+                List<Job> jobs = jobService.getUnexpiredJobs();
+                model.addAttribute("jobs",jobs);
             }
             return urlByUser;
         }

@@ -21,3 +21,6 @@
    ~~~
 
    使用SimpleDateFormat将字符串格式化Date时，应该注意所提供的字符串形式应当与SimpleDateFormat构造时所提供的字符串相符合。
+  
+4. MyBatis映射文件中不可出现小于号
+    使用**&lt;**代替即可

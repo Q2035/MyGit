@@ -8,11 +8,20 @@
 <h1>MANAGER INDEX</h1>
 <h2>All unmet deadlines</h2>
 <table>
-    <thead>Job Des</thead>
-    <thead>Job's Deadline</thead>
-    <thead>Submit Count</thead>
-    <thead>Count of who receive the job</thead>
-    <tbody></tbody>
+    <tr>
+        <td>Job Des</td>
+        <td>Job's Deadline</td>
+        <td>Submit Count</td>
+        <td>Count of who receive the job</td>
+    </tr>
+    <th:block th:each="job:${jobs}">
+        <tr>
+            <td th:text="${job.jobDescription}"></td>
+            <td th:text="${job.deadline}"></td>
+            <td th:text="${job.submitCount}"></td>
+            <td th:text="${job.totalCount}"></td>
+        </tr>
+    </th:block>
 </table>
 <a th:href="@{/job/user/logout}">logout</a>
 <a th:href="@{/job/manager/jobadd}">jobadd</a>
