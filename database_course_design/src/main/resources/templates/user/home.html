@@ -16,7 +16,7 @@
     <th:block th:each="job,step:${jobs}">
         <tr>
             <td th:text="${step.count}"></td>
-            <td th:text="${job.jobDescription}"></td>
+            <td><a th:text="${job.jobDescription}" th:href="@{/job/user/fileupload/{id}(id=${job.id})}"></a></td>
             <td th:text="${job.deadline}" style="color: red"></td>
         </tr>
     </th:block>
