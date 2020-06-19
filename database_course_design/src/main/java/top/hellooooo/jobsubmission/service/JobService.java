@@ -20,4 +20,6 @@ public interface JobService {
     List<Job> getCurrentJobByUserId(Integer userId);
 
     Job getJobByJobId(Integer id);
+
+    Job getJobByUserIdAndJobId(Integer userId, Integer jobId);
 }

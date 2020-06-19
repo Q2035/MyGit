@@ -47,4 +47,10 @@
     <select id="getJobByJobId" parameterType="int" resultType="Job">
         select * from j_job where id = #{id}
     </select>
+
+    Job getJobByUserIdAndJobId(@Param("userId") Integer userId,@Param("jobId") Integer jobId);
+    <select id="getJobByUserIdAndJobId" resultType="Job">
+        select job.* from j_job job,j_submit_person person where job.id = #{jobId} and
+        person.user_id = #{userId} and job.id = person.job_id;
+    </select>
 </mapper>

@@ -110,8 +110,19 @@ public class UserController {
     @ResponseBody
     @PostMapping("/fileupload")
     public CommonResult fileUpload(@RequestParam("file") MultipartFile file,
+                                   @RequestParam("jobId")Integer jobId,
                                    HttpServletRequest request){
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        Job job = jobService.getJobByUserIdAndJobId(user.getId(), jobId);
+//        判断当前用户是否具有相应的Job，否则无权限提交
         CommonResult result = new CommonResult();
+        if (job == null) {
+            logger.warn("user {} wants to upload file and reject! ",user.getUsername());
+            logger.warn("file {}",file.getOriginalFilename());
+            result.setMessage("ERROR! NO PERMISSION!");
+            return result;
+        }
         if (file.isEmpty()){
             logger.warn("{} upload an empty file.",request.getRemoteAddr());
         }
@@ -134,6 +145,9 @@ public class UserController {
             result.setSuccess(false);
             return result;
         }
+//        到这里的话正常来说就是提交完成了
+//        更新数据库即可
+
         result.setMessage("Success!");
         result.setSuccess(true);
         logger.info(result.toString());

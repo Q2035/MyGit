@@ -50,4 +50,9 @@ public class JobServiceImpl implements JobService {
     public Job getJobByJobId(Integer id) {
         return jobMapper.getJobByJobId(id);
     }
+
+    @Override
+    public Job getJobByUserIdAndJobId(Integer userId, Integer jobId) {
+        return jobMapper.getJobByUserIdAndJobId(userId,jobId);
+    }
 }

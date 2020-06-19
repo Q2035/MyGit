@@ -1,5 +1,6 @@
 package top.hellooooo.jobsubmission.mapper;
 
+import org.apache.ibatis.annotations.Param;
 import top.hellooooo.jobsubmission.pojo.Job;
 import top.hellooooo.jobsubmission.pojo.SubmitPerson;
 import top.hellooooo.jobsubmission.pojo.User;
@@ -25,4 +26,6 @@ public interface JobMapper {
     List<Job> getCurrentJobByUserId(Integer userId);
 
     Job getJobByJobId(Integer id);
+
+    Job getJobByUserIdAndJobId(@Param("userId") Integer userId,@Param("jobId") Integer jobId);
 }
