@@ -92,22 +92,23 @@ public class UserController {
         return "/user/index";
     }
 
-    @GetMapping("/fileupload")
-    public String upload(){
+    @GetMapping("/fileupload/{id}")
+    public String upload(@PathVariable("id")Integer id,
+                         Model model){
+        Job job = jobService.getJobByJobId(id);
+        model.addAttribute("job", job);
         return "/user/jobupload";
     }
 
 
     /**
      * 上传文件处理，需要通过id判断是否有这个任务
-     * @param id
      * @param file
      * @param request
      * @return
      */
-    @PostMapping("/fileupload/{id}")
-    public CommonResult fileUpload(@PathVariable("id")Integer id,
-                                   MultipartFile file,
+    @PostMapping("/fileupload")
+    public CommonResult fileUpload(MultipartFile file,
                                    HttpServletRequest request){
         CommonResult result = new CommonResult();
         if (file.isEmpty()){

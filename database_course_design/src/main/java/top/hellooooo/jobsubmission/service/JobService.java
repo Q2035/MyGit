@@ -18,4 +18,6 @@ public interface JobService {
     List<User> getUnsubmitUser(Integer id);
 
     List<Job> getCurrentJobByUserId(Integer userId);
+
+    Job getJobByJobId(Integer id);
 }

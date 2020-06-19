@@ -43,4 +43,8 @@
         select job.* from j_job job join j_submit_person person on person.job_id = job.id
         and person.user_id = #{userId}
     </select>
+
+    <select id="getJobByJobId" parameterType="int" resultType="Job">
+        select * from j_job where id = #{id}
+    </select>
 </mapper>
