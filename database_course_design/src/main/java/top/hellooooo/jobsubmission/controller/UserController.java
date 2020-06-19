@@ -107,8 +107,9 @@ public class UserController {
      * @param request
      * @return
      */
+    @ResponseBody
     @PostMapping("/fileupload")
-    public CommonResult fileUpload(MultipartFile file,
+    public CommonResult fileUpload(@RequestParam("file") MultipartFile file,
                                    HttpServletRequest request){
         CommonResult result = new CommonResult();
         if (file.isEmpty()){

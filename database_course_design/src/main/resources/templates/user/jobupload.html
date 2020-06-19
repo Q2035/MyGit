@@ -11,19 +11,18 @@
 <h3 th:text="${job.deadline}"></h3>
 submited/all:<p th:text="|${job.submitCount}/${job.totalCount}|"></p>
 <form action="/job/user/fileupload" method="post" enctype="multipart/form-data">
-    <input type="file" name="file"/>
+    <input type="file" name="file" id="myFile"/>
     <input type="button" id="submitBtn" value="submit"/>
 </form>
 </body>
 <script>
     $('#submitBtn').click(function () {
-        var files = $('#file');
-        var data = new FormData(files[0]);
-
+        var formData = new FormData();
+        formData.append('file',$('#myFile')[0].files[0]);
         $.ajax({
             type: 'POST',
             url: "/job/user/fileupload",
-            data: data,
+            data: formData,
             cache: false,
             processData: false,
             contentType: false,
