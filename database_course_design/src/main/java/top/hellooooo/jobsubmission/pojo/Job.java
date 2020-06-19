@@ -14,6 +14,8 @@ public class Job {
     private Integer submitCount;
     private Integer totalCount;
 
+    public static String prefix = "JOB";
+
 //    作业发布时间
     private Date submitTime;
 

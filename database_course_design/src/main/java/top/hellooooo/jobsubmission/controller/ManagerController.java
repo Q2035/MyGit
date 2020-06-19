@@ -3,12 +3,10 @@ package top.hellooooo.jobsubmission.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import top.hellooooo.jobsubmission.pojo.Clazz;
 import top.hellooooo.jobsubmission.pojo.Job;
 import top.hellooooo.jobsubmission.pojo.SubmitPerson;
@@ -17,13 +15,18 @@ import top.hellooooo.jobsubmission.service.JobService;
 import top.hellooooo.jobsubmission.service.UserClazzService;
 import top.hellooooo.jobsubmission.util.CommonResult;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.websocket.server.PathParam;
+import java.io.*;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 
 @Controller
 @RequestMapping("/job/manager")
@@ -38,6 +41,9 @@ public class ManagerController {
     public SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Value("${file.basepath}")
+    private String basepath;
 
     /**
      * 跳转到job页面
@@ -127,6 +133,44 @@ public class ManagerController {
         return "manager/jobinfo";
     }
 
+    @ResponseBody
+    @GetMapping("/filedownload/{jobId}")
+    public CommonResult fileDownload(@PathVariable("jobId")Integer jobId,
+                               HttpServletRequest request,
+                               HttpServletResponse response){
+        File file = new File(basepath + Job.prefix + jobId);
+        String fileName ="";
+        CommonResult commonResult = new CommonResult();
+        if (!file.exists()){
+            commonResult.setMessage("error,the file doesn't exist!");
+            commonResult.setSuccess(false);
+            logger.warn("user:{}, the file:{} doesn't exist",request.getRemoteAddr(),fileName);
+            return commonResult;
+        }
+        String agent = request.getHeader("User-Agent");
+        String tempFileName = "";
+        logger.info("browser agent:{}",agent);
+
+
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/octet-stream");
+        response.addHeader("Content-Disposition","attachment;filename="+ tempFileName);
+//        设置文件大小
+        response.setContentLengthLong(file.length());
+        byte[] buffer = new byte[1024];
+        try(BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+            OutputStream os = response.getOutputStream()) {
+            while (bis.read(buffer) != -1){
+                os.write(buffer);
+            }
+            os.flush();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return commonResult;
+    }
 
     /**
      * 根据Session中的用户ID返回刚刚创建的Job对象ID

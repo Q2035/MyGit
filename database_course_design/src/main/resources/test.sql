@@ -17,7 +17,7 @@ create table j_role(
 
 create table j_user_role(
     id int primary key auto_increment,
-    user_id int,
+    user_id int unique,
     role_id int,
     foreign key(user_id) references j_user(id),
     foreign key(role_id) references j_user_role(id)

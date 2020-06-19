@@ -123,7 +123,7 @@ public class UserController {
 //        判断当前用户是否具有相应的Job，否则无权限提交
         CommonResult result = new CommonResult();
         if (job == null) {
-            logger.warn("user {} wants to upload file and reject! ",user.getUsername());
+            logger.warn("user {} wants to upload file but is rejected! ",user.getUsername());
             logger.warn("file {}",file.getOriginalFilename());
             result.setMessage("ERROR! NO PERMISSION!");
             return result;
@@ -135,7 +135,10 @@ public class UserController {
         String contentType = file.getContentType();
         logger.info("upload name:{} type:{}",fileName, contentType);
         String filePath;
-        filePath = publicBasePath + fileName;
+//        为了保存多个Job的文件，需要加上每个Job特定字符
+        String suffix = Job.prefix + job.getId();
+//        例如：/basepath/JOB1/temp.txt
+        filePath = publicBasePath + suffix + File.separator + fileName;
         File dest = new File(filePath);
 //        查看是否存在目录
         if (!dest.getParentFile().exists()){
