@@ -28,4 +28,12 @@ public interface JobMapper {
     Job getJobByJobId(Integer id);
 
     Job getJobByUserIdAndJobId(@Param("userId") Integer userId,@Param("jobId") Integer jobId);
+
+    /**
+     * 更新submit_person表
+     * @param jobId
+     */
+    void updateJobSubmitPerson(@Param("userId") Integer userId,@Param("jobId") Integer jobId);
+
+    void updateJobSubmitCount(Integer jobId);
 }

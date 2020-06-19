@@ -30,10 +30,10 @@ public class IndexController {
         Object user = session.getAttribute("user");
         if (user != null) {
             String urlByUser = indexUtil.getURLByUser((User) user);
-            if (urlByUser.contains(Role.MANAGER)) {
+            if (urlByUser.contains("manager")) {
                 List<Job> jobs = jobService.getUnexpiredJobs();
                 model.addAttribute("jobs",jobs);
-            } else if (urlByUser.contains(Role.STUDENT)) {
+            } else if (urlByUser.contains("user")) {
                 List<Job> jobs = jobService.getCurrentJobByUserId(((User) user).getId());
                 model.addAttribute("jobs",jobs);
             }

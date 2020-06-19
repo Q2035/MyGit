@@ -41,16 +41,23 @@
 
     <select id="getCurrentJobByUserId" parameterType="int" resultType="Job">
         select job.* from j_job job join j_submit_person person on person.job_id = job.id
-        and person.user_id = #{userId}
+        and person.user_id = #{userId} and (person.if_submit = false or person.if_submit is null)
     </select>
 
     <select id="getJobByJobId" parameterType="int" resultType="Job">
         select * from j_job where id = #{id}
     </select>
 
-    Job getJobByUserIdAndJobId(@Param("userId") Integer userId,@Param("jobId") Integer jobId);
     <select id="getJobByUserIdAndJobId" resultType="Job">
         select job.* from j_job job,j_submit_person person where job.id = #{jobId} and
         person.user_id = #{userId} and job.id = person.job_id;
     </select>
+
+    <update id="updateJobSubmitCount" parameterType="int">
+        update j_job set submit_count = submit_count + 1 where id = #{jobId};
+    </update>
+
+    <update id="updateJobSubmitPerson">
+        update j_submit_person set if_submit = true,submit_time = now() where user_id = #{userId} and job_id = #{jobId};
+    </update>
 </mapper>

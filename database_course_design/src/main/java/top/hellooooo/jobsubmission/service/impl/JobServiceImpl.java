@@ -47,12 +47,18 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    public Job getJobByUserIdAndJobId(Integer id, Integer jobId) {
+        return jobMapper.getJobByUserIdAndJobId(id,jobId);
+    }
+
+    @Override
     public Job getJobByJobId(Integer id) {
         return jobMapper.getJobByJobId(id);
     }
 
     @Override
-    public Job getJobByUserIdAndJobId(Integer userId, Integer jobId) {
-        return jobMapper.getJobByUserIdAndJobId(userId,jobId);
+    public void updateJobAndSubmitPerson(Integer userId, Integer jobId) {
+        jobMapper.updateJobSubmitCount(jobId);
+        jobMapper.updateJobSubmitPerson(userId,jobId);
     }
 }

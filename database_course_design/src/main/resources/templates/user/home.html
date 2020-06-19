@@ -6,8 +6,9 @@
 </head>
 <body>
 <h1>USER HOME</h1>
-<h2>Current tasks that need to be completed</h2>
-<table border="1" th:if="${jobs != null}">
+<h2 th:if="${#arrays.length(jobs)}!=0">Current tasks that need to be completed</h2>
+<p th:if="${#arrays.length(jobs)}==0">NO task!</p>
+<table border="1" th:if="${#arrays.length(jobs)}!=0">
     <tr>
         <td>count</td>
         <td>job description</td>

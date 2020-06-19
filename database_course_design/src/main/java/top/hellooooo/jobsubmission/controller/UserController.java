@@ -64,7 +64,12 @@ public class UserController {
             redirectAddress = indexUtil.getURLByUser(user);
             session.setAttribute("user",user);
 //            如果登录者为管理员，则将所有未过期Job信息传回前端
-            List<Job> unexpiredJobs = jobService.getUnexpiredJobs();
+            List<Job> unexpiredJobs;
+            if (user.getRole().getRoleName().contains(Role.MANAGER)) {
+                 unexpiredJobs = jobService.getUnexpiredJobs();
+            }else {
+                unexpiredJobs = jobService.getCurrentJobByUserId(user.getId());
+            }
             model.addAttribute("jobs", unexpiredJobs);
             return redirectAddress;
 //            提示密码错误
@@ -89,7 +94,7 @@ public class UserController {
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.removeAttribute("user");
-        return "/user/index";
+        return "/index";
     }
 
     @GetMapping("/fileupload/{id}")
@@ -147,7 +152,7 @@ public class UserController {
         }
 //        到这里的话正常来说就是提交完成了
 //        更新数据库即可
-
+        jobService.updateJobAndSubmitPerson(user.getId(),jobId);
         result.setMessage("Success!");
         result.setSuccess(true);
         logger.info(result.toString());

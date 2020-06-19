@@ -1,5 +1,6 @@
 package top.hellooooo.jobsubmission.service;
 
+import org.apache.ibatis.annotations.Param;
 import top.hellooooo.jobsubmission.pojo.Job;
 import top.hellooooo.jobsubmission.pojo.SubmitPerson;
 import top.hellooooo.jobsubmission.pojo.User;
@@ -19,7 +20,10 @@ public interface JobService {
 
     List<Job> getCurrentJobByUserId(Integer userId);
 
+    Job getJobByUserIdAndJobId(Integer id, Integer jobId);
+
     Job getJobByJobId(Integer id);
 
-    Job getJobByUserIdAndJobId(Integer userId, Integer jobId);
+    void updateJobAndSubmitPerson(Integer userId,Integer jobId);
+
 }
