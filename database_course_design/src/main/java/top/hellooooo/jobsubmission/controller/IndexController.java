@@ -23,7 +23,7 @@ public class IndexController {
     @Autowired
     private JobService jobService;
 
-    @RequestMapping({"/user/index","/user/","/user/login"})
+    @RequestMapping({"/","/user/index","/user/","/user/login"})
     public String userIndex(HttpSession session,
                             Model model){
 //        如果Session中存在对应用户信息，则跳过登录，直接进入用户界面

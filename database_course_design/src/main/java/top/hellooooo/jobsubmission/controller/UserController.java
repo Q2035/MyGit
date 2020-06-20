@@ -138,6 +138,7 @@ public class UserController {
 //        为了保存多个Job的文件，需要加上每个Job特定字符
         String suffix = Job.prefix + job.getId();
 //        例如：/basepath/JOB1/temp.txt
+//        这里需要加上班级
         filePath = publicBasePath + suffix + File.separator + fileName;
         File dest = new File(filePath);
 //        查看是否存在目录

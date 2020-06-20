@@ -7,10 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import top.hellooooo.jobsubmission.pojo.Clazz;
-import top.hellooooo.jobsubmission.pojo.Job;
-import top.hellooooo.jobsubmission.pojo.SubmitPerson;
-import top.hellooooo.jobsubmission.pojo.User;
+import top.hellooooo.jobsubmission.pojo.*;
 import top.hellooooo.jobsubmission.service.JobService;
 import top.hellooooo.jobsubmission.service.UserClazzService;
 import top.hellooooo.jobsubmission.util.CommonResult;
@@ -45,6 +42,13 @@ public class ManagerController {
 
     @Value("${file.basepath}")
     private String basepath;
+
+    @GetMapping({"/index","/"})
+    public String index(Model model){
+        List<Job> unexpiredJobs = jobService.getUnexpiredJobs();
+        model.addAttribute("jobs", unexpiredJobs);
+        return "/manager/index";
+    }
 
     /**
      * 跳转到job页面
