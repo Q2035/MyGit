@@ -19,6 +19,7 @@ import top.hellooooo.jobsubmission.util.CommonResult;
 import top.hellooooo.jobsubmission.util.FilenameParser;
 import top.hellooooo.jobsubmission.util.IndexUtil;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
@@ -62,6 +63,8 @@ public class UserController {
                      HttpSession session){
 //        将用户信息存入Session
         User user = userService.getUserWithClazzAndRoleByUsername(username);
+        int userLoginCount = 0;
+        int ipLoginCount = 0;
         if (user != null
             && user.getPassword().equals(password)){
             String redirectAddress;
@@ -78,7 +81,8 @@ public class UserController {
             model.addAttribute("jobs", unexpiredJobs);
             return redirectAddress;
         }else {
-//            提示密码错误
+
+            //            提示密码错误
             String message;
             if (user == null) {
                 message = "cann't find the user in db, please check the username";
@@ -90,6 +94,21 @@ public class UserController {
         return "redirect:index";
     }
 
+    /**
+     * 如果Cookie中不存在对应信息，返回null
+     * @param request
+     * @param username
+     * @return
+     */
+    Integer getLoginCountFromCookie(HttpServletRequest request,String username) {
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals(username)) {
+                return Integer.valueOf(cookie.getValue());
+            }
+        }
+        return null;
+    }
 
     /**
      * 登出

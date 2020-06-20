@@ -27,8 +27,9 @@ create table j_black_list(
     id int primary key auto_increment,
     user_id int,
     happen_time datetime,
-    ip_address varchar(23),
-    reason varchar(30),
+    ip varchar(23),
+    device varchar(50),
+    reason varchar(50),
     foreign key(user_id) references j_user(id)
 );
 

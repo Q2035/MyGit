@@ -1,14 +1,6 @@
 package top.hellooooo.jobsubmission.util;
 
-public enum AccountStatus {
-    NORMAL(0),FREEZE(1);
-    int status;
-
-    AccountStatus(int status) {
-        this.status = status;
-    }
-
-    public int getStatus() {
-        return status;
-    }
+public class AccountStatus {
+    public static final Integer UNAUTHORIZED_ACCESS_TO = 1;
+    public static final Integer TOO_MANY_PASSWORD_ERRORS = 2;
 }
