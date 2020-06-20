@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import top.hellooooo.jobsubmission.pojo.*;
 import top.hellooooo.jobsubmission.service.JobService;
 import top.hellooooo.jobsubmission.service.UserClazzService;
+import top.hellooooo.jobsubmission.service.UserService;
 import top.hellooooo.jobsubmission.util.CommonResult;
 import top.hellooooo.jobsubmission.util.ZipCompress;
 
@@ -36,6 +37,9 @@ public class ManagerController {
 
     @Autowired
     private JobService jobService;
+
+    @Autowired
+    private UserService userService;
 
     public SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -139,7 +143,7 @@ public class ManagerController {
     @GetMapping("/jobinfo/{id}")
     public String jobInfo(@PathVariable("id") Integer id,
                           Model model) {
-        List<User> users = jobService.getUnsubmitUser(id);
+        List<User> users = userService.getUnSubmitPersonWithJobId(id);
         model.addAttribute("unSubmitUsers", users);
         return "manager/jobinfo";
     }

@@ -4,6 +4,8 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import top.hellooooo.jobsubmission.pojo.User;
 
+import java.util.List;
+
 public interface UserMapper {
 
 //    @Select("select user.*,role.* as role from j_user user,j_user_role user_role,j_role role")
@@ -12,4 +14,6 @@ public interface UserMapper {
     User getUserAndClassById(Integer id);
 
     User getUserWithClazzAndRoleByUsername(String username);
+
+    List<User> getUnSubmitPersonWithJobId(Integer jobId);
 }

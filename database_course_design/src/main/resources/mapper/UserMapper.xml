@@ -36,6 +36,12 @@
         select * from j_user where username = #{username}
     </select>
 
+<!--    获取未提交的人的信息-->
+    <select id="getUnSubmitPersonWithJobId" parameterType="int" resultMap="userRoleClazzMap">
+        select user.* from j_user user join j_job job join j_submit_person person join j_user_clazz user_clazz join j_clazz clazz
+        on job.id = #{jobId} and person.job_id = job.id and person.user_id = user.id and user_clazz.user_id = user.id and user_clazz.clazz_id = clazz.id
+    </select>
+
     <resultMap id="userRoleClazzMap" type="User">
         <id property="id" column="id"/>
         <association property="clazz" column="id" select="getClazzByUserId"/>

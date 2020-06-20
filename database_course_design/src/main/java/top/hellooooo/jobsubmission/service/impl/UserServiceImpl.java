@@ -6,6 +6,8 @@ import top.hellooooo.jobsubmission.mapper.UserMapper;
 import top.hellooooo.jobsubmission.pojo.User;
 import top.hellooooo.jobsubmission.service.UserService;
 
+import java.util.List;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -26,5 +28,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserWithClazzAndRoleByUsername(String username) {
         return userMapper.getUserWithClazzAndRoleByUsername(username);
+    }
+
+    @Override
+    public List<User> getUnSubmitPersonWithJobId(Integer jobId) {
+        return userMapper.getUnSubmitPersonWithJobId(jobId);
     }
 }

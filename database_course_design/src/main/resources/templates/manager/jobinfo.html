@@ -10,11 +10,13 @@
     <tr>
         <td>count</td>
         <td>username</td>
+        <td>clazzName</td>
     </tr>
     <th:block th:each="user,step:${unSubmitUsers}">
         <tr>
             <td th:text="${step.count}"></td>
             <td th:text="${user.username}"></td>
+            <td th:text="${user.clazz.clazzName}"></td>
         </tr>
     </th:block>
 </table>

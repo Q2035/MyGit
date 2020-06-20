@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import top.hellooooo.jobsubmission.mapper.UserMapper;
 import top.hellooooo.jobsubmission.pojo.User;
 
+import java.util.List;
+
 @Controller
 @ResponseBody
 @RequestMapping("/test")
@@ -16,7 +18,7 @@ public class TestController {
     private UserMapper userMapper;
 
     @RequestMapping("/t1")
-    public User t1(){
-        return userMapper.getUserWithClazzAndRoleByUsername("180604101");
+    public List<User> t1(){
+        return userMapper.getUnSubmitPersonWithJobId(18);
     }
 }
