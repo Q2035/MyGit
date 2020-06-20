@@ -9,8 +9,16 @@
 <div style="position: center">
     <form th:action="@{/job/manager/jobadd}" method="post">
         job descriptin:<input type="text" name="job_description"/>
-        deadline(data and time):<input type="datetime-local" name="deadline"/>
-        <br />
+        deadline(data and time):<input type="datetime-local" name="deadline"/><br/>
+        countOfPart:<input type="text" name="partCount"><br/>
+        separator:<input type="text" name="separat"><br/>
+        part1:<input type="text" name="part1"><b/>
+        part2:<input type="text" name="part2"><b/>
+        part3:<input type="text" name="part3"><b/>
+        part4:<input type="text" name="part4"><b/>
+        part5:<input type="text" name="part5"><b/>
+        part6:<input type="text" name="part6"><b/>
+
         Choose the Clazz:<input type="checkbox" th:each="clazz: ${allclazz}" th:name="clazz" th:text="|${clazz.getClazzName()}:${clazz.getTotalCount()}|" th:value="${clazz.getId()}">
         <input type="submit" value="submit"/>
 

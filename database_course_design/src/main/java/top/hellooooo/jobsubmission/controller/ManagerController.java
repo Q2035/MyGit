@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import top.hellooooo.jobsubmission.pojo.*;
@@ -71,17 +72,19 @@ public class ManagerController {
 
     /**
      * Job发布
-     *
      * @param deadline
      * @param job_description
+     * @param filename 要求的Job文件名格式 未指定的部分默认为空字符串，而不是null
      * @param model
      * @param clazz
      * @param session
      * @return
      */
+    @Transactional
     @PostMapping("/jobadd")
     public String jobadd(String deadline,
                          String job_description,
+                         Filename filename,
                          Model model,
                          String clazz,
                          HttpSession session) {
@@ -117,6 +120,9 @@ public class ManagerController {
             }
 //            将生成的对象插入数据库
             jobService.insertJobSubmitPerson(submitPersonList);
+//            将文件格式信息插入数据库
+            filename.setJobId(job.getId());
+            jobService.setFilename(filename);
         } catch (ParseException e) {
             result.setMessage("Error! The deadline is illegal!");
             e.printStackTrace();

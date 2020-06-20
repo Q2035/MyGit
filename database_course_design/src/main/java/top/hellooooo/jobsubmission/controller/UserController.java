@@ -9,12 +9,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import top.hellooooo.jobsubmission.pojo.Filename;
 import top.hellooooo.jobsubmission.pojo.Job;
 import top.hellooooo.jobsubmission.pojo.Role;
 import top.hellooooo.jobsubmission.pojo.User;
 import top.hellooooo.jobsubmission.service.JobService;
 import top.hellooooo.jobsubmission.service.UserService;
 import top.hellooooo.jobsubmission.util.CommonResult;
+import top.hellooooo.jobsubmission.util.FilenameParser;
 import top.hellooooo.jobsubmission.util.IndexUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +37,9 @@ public class UserController {
 
     @Autowired
     private JobService jobService;
+
+    @Autowired
+    private FilenameParser filenameParser;
 
     @Value("${file.basepath}")
     private String publicBasePath;
@@ -135,7 +140,11 @@ public class UserController {
         String contentType = file.getContentType();
         logger.info("upload name:{} type:{}",fileName, contentType);
         String[] split = fileName.split("\\.");
-        fileName = user.getUsername() + " " + user.getNickname() + (split.length != 0 ? "." + split[split.length - 1]: "");
+//        从数据库中取出Filename对象
+        Filename filenameByJobId = jobService.getFilenameByJobId(jobId);
+//        解析出文件名的前半部分，之后只需要加上提交文件本来的文件后缀即可
+        String parseFilename = filenameParser.parseFilename(filenameByJobId, user);
+        fileName = parseFilename + (split.length != 0 ? "." + split[split.length - 1]: "");
         String filePath;
 //        为了保存多个Job的文件，需要加上每个Job特定字符
         String suffix = Job.prefix + job.getId();

@@ -42,7 +42,6 @@ create table j_job(
     total_count int
 );
 
-# 有问题，不应该这样
 create table j_submit_person(
     id int primary key auto_increment,
     user_id int,
@@ -53,22 +52,37 @@ create table j_submit_person(
     foreign key(job_id) references j_job(id)
 );
 
-create table j_job_participants(
-    id int primary key auto_increment,
-    user_id int,
-    job_id int,
-    if_submit bool,
-    submit_time datetime,
-    foreign key(user_id) references j_user(id),
-    foreign key(job_id) references j_job(id)
-);
+# create table j_job_participants(
+#     id int primary key auto_increment,
+#     user_id int,
+#     job_id int,
+#     if_submit bool,
+#     submit_time datetime,
+#     foreign key(user_id) references j_user(id),
+#     foreign key(job_id) references j_job(id)
+# );
 
+# 这里不该这样
+# create table j_file_name(
+#     id int primary key auto_increment,
+#     job_id int,
+#     style varchar(20),
+#     foreign key(job_id) references j_job(id)
+# );
 
+# 列名不能为separator，Reserved keywords
 create table j_file_name(
-    id int primary key auto_increment,
-    job_id int,
-    style varchar(20),
-    foreign key(job_id) references j_job(id)
+  id int primary key auto_increment,
+  part_count int,
+  job_id int,
+  separat varchar(10),
+  part1 varchar(20),
+  part2 varchar(20),
+  part3 varchar(20),
+  part4 varchar(20),
+  part5 varchar(20),
+  part6 varchar(20),
+  foreign key(job_id) references j_job(id)
 );
 
 create table j_clazz(

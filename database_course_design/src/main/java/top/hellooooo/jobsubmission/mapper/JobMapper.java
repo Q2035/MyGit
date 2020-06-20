@@ -1,6 +1,7 @@
 package top.hellooooo.jobsubmission.mapper;
 
 import org.apache.ibatis.annotations.Param;
+import top.hellooooo.jobsubmission.pojo.Filename;
 import top.hellooooo.jobsubmission.pojo.Job;
 import top.hellooooo.jobsubmission.pojo.SubmitPerson;
 import top.hellooooo.jobsubmission.pojo.User;
@@ -36,4 +37,11 @@ public interface JobMapper {
     void updateJobSubmitPerson(@Param("userId") Integer userId,@Param("jobId") Integer jobId);
 
     void updateJobSubmitCount(Integer jobId);
+
+    /**
+     * 将要求的文件名插入数据库
+     */
+    void setFilename(Filename filename);
+
+    Filename getFilenameByJobId(Integer jobId);
 }

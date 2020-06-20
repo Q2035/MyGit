@@ -3,6 +3,7 @@ package top.hellooooo.jobsubmission.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import top.hellooooo.jobsubmission.mapper.JobMapper;
+import top.hellooooo.jobsubmission.pojo.Filename;
 import top.hellooooo.jobsubmission.pojo.Job;
 import top.hellooooo.jobsubmission.pojo.SubmitPerson;
 import top.hellooooo.jobsubmission.pojo.User;
@@ -60,5 +61,15 @@ public class JobServiceImpl implements JobService {
     public void updateJobAndSubmitPerson(Integer userId, Integer jobId) {
         jobMapper.updateJobSubmitCount(jobId);
         jobMapper.updateJobSubmitPerson(userId,jobId);
+    }
+
+    @Override
+    public void setFilename(Filename filename) {
+        jobMapper.setFilename(filename);
+    }
+
+    @Override
+    public Filename getFilenameByJobId(Integer jobId) {
+        return jobMapper.getFilenameByJobId(jobId);
     }
 }

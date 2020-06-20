@@ -60,4 +60,14 @@
     <update id="updateJobSubmitPerson">
         update j_submit_person set if_submit = true,submit_time = now() where user_id = #{userId} and job_id = #{jobId};
     </update>
+
+    <insert id="setFilename" parameterType="Filename">
+        insert into j_file_name (part_count, job_id, separat, part1, part2, part3, part4, part5, part6)
+        values (#{partCount}, #{jobId}, #{separat}, #{part1}, #{part2}, #{part3}, #{part4}, #{part5}, #{part6});
+    </insert>
+
+<!--    Filename getFilenameByJobId(Integer jobId);-->
+    <select id="getFilenameByJobId" parameterType="int" resultType="Filename">
+        select * from j_file_name where job_id = #{jobId};
+    </select>
 </mapper>

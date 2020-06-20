@@ -1,6 +1,7 @@
 package top.hellooooo.jobsubmission.service;
 
 import org.apache.ibatis.annotations.Param;
+import top.hellooooo.jobsubmission.pojo.Filename;
 import top.hellooooo.jobsubmission.pojo.Job;
 import top.hellooooo.jobsubmission.pojo.SubmitPerson;
 import top.hellooooo.jobsubmission.pojo.User;
@@ -26,4 +27,7 @@ public interface JobService {
 
     void updateJobAndSubmitPerson(Integer userId,Integer jobId);
 
+    void setFilename(Filename filename);
+
+    Filename getFilenameByJobId(Integer jobId);
 }

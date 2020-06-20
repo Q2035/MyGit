@@ -5,14 +5,37 @@ package top.hellooooo.jobsubmission.pojo;
  */
 public class Filename {
     private Integer id;
-//    最多支持八部分
+//    最多支持6部分
     private Integer partCount;
+
+//    外键
+    private Integer jobId;
+
+//    分隔符
+    private String separat;
     private String part1;
     private String part2;
     private String part3;
     private String part4;
     private String part5;
     private String part6;
+
+
+    public String getSeparat() {
+        return separat;
+    }
+
+    public void setSeparat(String separat) {
+        this.separat = separat;
+    }
+
+    public Integer getJobId() {
+        return jobId;
+    }
+
+    public void setJobId(Integer jobId) {
+        this.jobId = jobId;
+    }
 
     public Integer getId() {
         return id;
