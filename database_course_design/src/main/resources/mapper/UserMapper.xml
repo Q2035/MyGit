@@ -15,4 +15,30 @@
         <id property="id" column="id"/>
         <association property="role" column="id" select="getRoleByUserID"/>
     </resultMap>
+
+<!--    获取User以及他的Clazz-->
+    <select id="getUserAndClassById" parameterType="int" resultMap="userClazzMap">
+        select * from j_user where id = #{id};
+    </select>
+
+    <select id="getClazzByUserId" parameterType="int" resultType="Clazz">
+        select clazz.* from j_user_clazz user_clazz join j_clazz clazz
+        on user_clazz.user_id = #{id} and user_clazz.clazz_id = clazz.id
+    </select>
+    
+    <resultMap id="userClazzMap" type="User">
+        <id property="id" column="id"/>
+        <association property="clazz" column="id" select="getClazzByUserId"/>
+    </resultMap>
+
+
+    <select id="getUserWithClazzAndRoleByUsername" parameterType="string" resultMap="userRoleClazzMap">
+        select * from j_user where username = #{username}
+    </select>
+
+    <resultMap id="userRoleClazzMap" type="User">
+        <id property="id" column="id"/>
+        <association property="clazz" column="id" select="getClazzByUserId"/>
+        <association property="role" column="id" select="getRoleByUserID"/>
+    </resultMap>
 </mapper>

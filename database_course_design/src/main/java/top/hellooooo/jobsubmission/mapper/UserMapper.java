@@ -8,4 +8,8 @@ public interface UserMapper {
 
 //    @Select("select user.*,role.* as role from j_user user,j_user_role user_role,j_role role")
     User getUserByUsername(@Param("username") String username);
+
+    User getUserAndClassById(Integer id);
+
+    User getUserWithClazzAndRoleByUsername(String username);
 }

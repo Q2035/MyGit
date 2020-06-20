@@ -17,4 +17,14 @@ public class UserServiceImpl implements UserService {
 
         return userMapper.getUserByUsername(username);
     }
+
+    @Override
+    public User getUserAndClassById(Integer id) {
+        return userMapper.getUserAndClassById(id);
+    }
+
+    @Override
+    public User getUserWithClazzAndRoleByUsername(String username) {
+        return userMapper.getUserWithClazzAndRoleByUsername(username);
+    }
 }

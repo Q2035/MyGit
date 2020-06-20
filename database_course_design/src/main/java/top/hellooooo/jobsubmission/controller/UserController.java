@@ -56,7 +56,7 @@ public class UserController {
                      RedirectAttributes attributes,
                      HttpSession session){
 //        将用户信息存入Session
-        User user = userService.getUserByUsername(username);
+        User user = userService.getUserWithClazzAndRoleByUsername(username);
         if (user != null
             && user.getPassword().equals(password)){
             String redirectAddress;
@@ -134,6 +134,8 @@ public class UserController {
         String fileName = file.getOriginalFilename();
         String contentType = file.getContentType();
         logger.info("upload name:{} type:{}",fileName, contentType);
+        String[] split = fileName.split("\\.");
+        fileName = user.getUsername() + " " + user.getNickname() + (split.length != 0 ? "." + split[split.length - 1]: "");
         String filePath;
 //        为了保存多个Job的文件，需要加上每个Job特定字符
         String suffix = Job.prefix + job.getId();

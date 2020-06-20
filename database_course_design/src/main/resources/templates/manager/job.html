@@ -13,6 +13,7 @@
         <br />
         Choose the Clazz:<input type="checkbox" th:each="clazz: ${allclazz}" th:name="clazz" th:text="|${clazz.getClazzName()}:${clazz.getTotalCount()}|" th:value="${clazz.getId()}">
         <input type="submit" value="submit"/>
+
     </form>
     <br />
 </div>

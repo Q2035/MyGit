@@ -24,6 +24,8 @@ public class User {
 
     private Role role;
 
+    private Clazz clazz;
+
     @Override
     public String toString() {
         return "User{" +
@@ -36,6 +38,14 @@ public class User {
                 ", accountStatus=" + accountStatus +
                 ", description='" + description + '\'' +
                 '}';
+    }
+
+    public Clazz getClazz() {
+        return clazz;
+    }
+
+    public void setClazz(Clazz clazz) {
+        this.clazz = clazz;
     }
 
     public Role getRole() {
