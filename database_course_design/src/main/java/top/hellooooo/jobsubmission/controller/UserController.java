@@ -72,8 +72,8 @@ public class UserController {
             }
             model.addAttribute("jobs", unexpiredJobs);
             return redirectAddress;
-//            提示密码错误
         }else {
+//            提示密码错误
             String message;
             if (user == null) {
                 message = "cann't find the user in db, please check the username";

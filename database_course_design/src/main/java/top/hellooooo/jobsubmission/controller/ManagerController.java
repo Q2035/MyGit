@@ -14,6 +14,7 @@ import top.hellooooo.jobsubmission.pojo.User;
 import top.hellooooo.jobsubmission.service.JobService;
 import top.hellooooo.jobsubmission.service.UserClazzService;
 import top.hellooooo.jobsubmission.util.CommonResult;
+import top.hellooooo.jobsubmission.util.ZipCompress;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -138,23 +139,37 @@ public class ManagerController {
     public CommonResult fileDownload(@PathVariable("jobId")Integer jobId,
                                HttpServletRequest request,
                                HttpServletResponse response){
-        File file = new File(basepath + Job.prefix + jobId);
-        String fileName ="";
+        String sourceFileName = basepath + Job.prefix + jobId;
+        File parentPath = new File(sourceFileName);
+        if (!parentPath.exists()) {
+            parentPath.mkdirs();
+        }
+        String zipFileName = Job.prefix + jobId + ".zip";
+//        eg：D:\Temp\zip\Job12.zip
+        ZipCompress zipCompress = new ZipCompress(basepath + File.separator + "zip" + File.separator + zipFileName, sourceFileName);
         CommonResult commonResult = new CommonResult();
+        try {
+            zipCompress.zip();
+        } catch (Exception e) {
+            logger.error("ZIP:IOException ");
+            e.printStackTrace();
+            commonResult.setMessage("Internal Error!");
+            return commonResult;
+        }
+
+//        获取压缩文件路径
+        File file = new File(basepath + File.separator + "zip" + File.separator + zipFileName);
         if (!file.exists()){
             commonResult.setMessage("error,the file doesn't exist!");
             commonResult.setSuccess(false);
-            logger.warn("user:{}, the file:{} doesn't exist",request.getRemoteAddr(),fileName);
+            logger.warn("user:{}, the file:{} doesn't exist",request.getRemoteAddr(),zipFileName);
             return commonResult;
         }
         String agent = request.getHeader("User-Agent");
-        String tempFileName = "";
         logger.info("browser agent:{}",agent);
-
-
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/octet-stream");
-        response.addHeader("Content-Disposition","attachment;filename="+ tempFileName);
+        response.addHeader("Content-Disposition","attachment;filename="+ zipFileName);
 //        设置文件大小
         response.setContentLengthLong(file.length());
         byte[] buffer = new byte[1024];

@@ -13,6 +13,7 @@
         <td>Job's Deadline</td>
         <td>Submit Count</td>
         <td>Count of who receive the job</td>
+        <td> </td>
     </tr>
     <th:block th:each="job:${jobs}">
         <tr>
@@ -20,6 +21,7 @@
             <td th:text="${job.deadline}"></td>
             <td th:text="${job.submitCount}"></td>
             <td th:text="${job.totalCount}"></td>
+            <td><a th:href="@{/job/manager/filedownload/{id}(id=${job.id})}">download</a></td>
         </tr>
     </th:block>
 </table>

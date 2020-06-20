@@ -14,8 +14,8 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new LoginInterceptor())
                 .addPathPatterns("/job/user/**")
-                .addPathPatterns("/manager/**")
-                .addPathPatterns("/admin/**")
+                .addPathPatterns("/job/manager/**")
+                .addPathPatterns("/job/manager/admin/**")
                 .excludePathPatterns(Arrays.asList("/job/user/authentication", "/job/user/index", "/job/user/", "/job/user/login"));
     }
 
