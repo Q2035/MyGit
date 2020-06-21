@@ -9,6 +9,7 @@ import top.hellooooo.jobsubmission.service.BlackListService;
 import top.hellooooo.jobsubmission.service.UserService;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class BlackListServiceImpl implements BlackListService {
@@ -27,5 +28,18 @@ public class BlackListServiceImpl implements BlackListService {
     @Override
     public void updateUserAccountStatus(Integer userId, Integer accountStatus) {
         blackListMapper.updateUserAccountStatus(userId,accountStatus);
+    }
+
+    @Override
+    public void updateBlackListByIP(String ip) {
+        BlackList blackList = new BlackList();
+        blackList.setIp(ip);
+        blackList.setHappenTime(new Date());
+        blackListMapper.setBlackList(blackList);
+    }
+
+    @Override
+    public List<BlackList> getBlackListByIP(String ip) {
+        return blackListMapper.getBlackListByIP(ip);
     }
 }

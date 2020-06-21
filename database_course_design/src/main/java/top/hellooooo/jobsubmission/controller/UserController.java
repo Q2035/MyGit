@@ -14,6 +14,7 @@ import top.hellooooo.jobsubmission.pojo.*;
 import top.hellooooo.jobsubmission.service.BlackListService;
 import top.hellooooo.jobsubmission.service.JobService;
 import top.hellooooo.jobsubmission.service.UserService;
+import top.hellooooo.jobsubmission.util.AccountStatus;
 import top.hellooooo.jobsubmission.util.CommonResult;
 import top.hellooooo.jobsubmission.util.FilenameParser;
 import top.hellooooo.jobsubmission.util.IndexUtil;
@@ -54,7 +55,6 @@ public class UserController {
      * 登录认证
      * @param username
      * @param password
-     * @param attributes
      * @param session
      * @return
      */
@@ -64,12 +64,14 @@ public class UserController {
                      HttpServletRequest request,
                      HttpServletResponse response,
                      Model model,
-                     RedirectAttributes attributes,
                      HttpSession session){
 //        将用户信息存入Session
         User user = userService.getUserWithClazzAndRoleByUsername(username);
-        int userLoginCount = 0;
-        int ipLoginCount = 0;
+        if (ifUserInBlackList(user)) {
+            model.addAttribute("message", "The account has been frozen, please contact the administrator");
+            return "index";
+        }
+        int userLoginCount = 1;
 //        登录成功
         if (user != null
             && user.getPassword().equals(password)){
@@ -88,10 +90,6 @@ public class UserController {
             return redirectAddress;
         }else {
             //            提示密码错误
-            ipLoginCount = (int) session.getAttribute(BlackList.IP_SESSION);
-            ipLoginCount += 1;
-//            只要登录失败就更新Session信息
-            session.setAttribute(BlackList.IP_SESSION,String.valueOf(ipLoginCount));
             String message = "";
             if (user == null) {
                 message = "can't find the user in db, please check the username";
@@ -99,27 +97,25 @@ public class UserController {
     //            之前登录过
                 Integer loginCountFromCookie = getLoginCountFromCookie(request, username);
                 if (loginCountFromCookie != null) {
-                    userLoginCount += 1;
-                    Cookie cookie = new Cookie(BlackList.USER_COOKIE,String.valueOf(userLoginCount));
-                    cookie.setPath("/");
-    //                默认30分钟
-                    cookie.setMaxAge(30 * 60);
-                    response.addCookie(cookie);
+                    userLoginCount = loginCountFromCookie + 1;
                 }
+                Cookie cookie = new Cookie(BlackList.USER_COOKIE,String.valueOf(userLoginCount));
+                cookie.setPath("/");
+//                默认30分钟
+                cookie.setMaxAge(30 * 60);
+                response.addCookie(cookie);
 
                 if (userLoginCount > BlackList.MAX_FAILURE_COUNT) {
                     message = "Too many errors and the account {" + username + "} is frozen!\n";
-    //                先查询数据库账号是否已存在
-
+    //                更新用户状态
+                    blackListService.setBlackListByUser(user);
+                    blackListService.updateUserAccountStatus(user.getId(), AccountStatus.TOO_MANY_PASSWORD_ERRORS);
                 }
-                if (ipLoginCount > BlackList.MAX_FAILURE_COUNT) {
-                    message += "Too many errors and the ip {"+ request.getRemoteAddr() +"} is frozen";
-                }
-                message = "fail to login, please check your username or password.";
+                message += "fail to login, please check your username or password.";
             }
-            attributes.addFlashAttribute("message",message);
+            model.addAttribute("message",message);
         }
-        return "redirect:index";
+        return "index";
     }
 
     /**
@@ -131,11 +127,25 @@ public class UserController {
     Integer getLoginCountFromCookie(HttpServletRequest request,String username) {
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
-            if (cookie.getName().equals(username)) {
+            if (cookie.getName().equals(BlackList.USER_COOKIE)) {
                 return Integer.valueOf(cookie.getValue());
             }
         }
         return null;
+    }
+
+
+    /**
+     * 判断用户是否在黑名单中
+     * @param userByUsername
+     * @return
+     */
+    boolean ifUserInBlackList(User userByUsername){
+        if (userByUsername.getAccountStatus() == AccountStatus.TOO_MANY_PASSWORD_ERRORS
+            || userByUsername.getAccountStatus() == AccountStatus.UNAUTHORIZED_ACCESS_TO) {
+            return true;
+        }
+        return false;
     }
 
     /**

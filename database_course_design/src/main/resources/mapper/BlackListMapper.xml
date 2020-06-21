@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="top.hellooooo.jobsubmission.mapper.BlackListMapper">
-    <insert id="setBlackListMap" parameterType="BlankList">
+    <insert id="setBlackList" parameterType="BlackList">
         insert into j_black_list (user_id, happen_time, ip, device, reason)
-        values (#{userId}, #{happen_time}, #{ip}, #{device}, #{reason})
+        values (#{userId}, #{happenTime}, #{ip}, #{device}, #{reason})
     </insert>
 
 <!--    更新用户账号状态-->
@@ -11,4 +11,5 @@
         update j_user set account_status = #{accountStatus} where
         id = #{userId}
     </update>
+
 </mapper>
