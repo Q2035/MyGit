@@ -32,14 +32,11 @@ import java.util.List;
 @RequestMapping("/job/manager")
 public class ManagerController {
 
-    @Autowired
-    private UserClazzService userClazzService;
+    private final UserClazzService userClazzService;
 
-    @Autowired
-    private JobService jobService;
+    private final JobService jobService;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     public SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -48,12 +45,19 @@ public class ManagerController {
     @Value("${file.basepath}")
     private String basepath;
 
+    public ManagerController(UserClazzService userClazzService, JobService jobService, UserService userService) {
+        this.userClazzService = userClazzService;
+        this.jobService = jobService;
+        this.userService = userService;
+    }
+
     @GetMapping({"/index","/"})
     public String index(Model model){
         List<Job> unexpiredJobs = jobService.getUnexpiredJobs();
         model.addAttribute("jobs", unexpiredJobs);
         return "/manager/index";
     }
+
 
     /**
      * 跳转到job页面

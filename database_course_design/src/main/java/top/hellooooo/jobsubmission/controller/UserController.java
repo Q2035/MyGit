@@ -2,14 +2,11 @@ package top.hellooooo.jobsubmission.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import top.hellooooo.jobsubmission.mapper.BlackListMapper;
 import top.hellooooo.jobsubmission.pojo.*;
 import top.hellooooo.jobsubmission.service.BlackListService;
 import top.hellooooo.jobsubmission.service.JobService;
@@ -31,25 +28,36 @@ import java.util.List;
 @Controller
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private IndexUtil indexUtil;
+    private final IndexUtil indexUtil;
 
-    @Autowired
-    private JobService jobService;
+    private final JobService jobService;
 
-    @Autowired
-    private BlackListService blackListService;
+    private final BlackListService blackListService;
 
-    @Autowired
-    private FilenameParser filenameParser;
+    private final FilenameParser filenameParser;
 
     @Value("${file.basepath}")
     private String publicBasePath;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    /**
+     * 构造器注入依赖
+     * @param userService
+     * @param indexUtil
+     * @param jobService
+     * @param blackListService
+     * @param filenameParser
+     */
+    public UserController(UserService userService, IndexUtil indexUtil, JobService jobService, BlackListService blackListService, FilenameParser filenameParser) {
+        this.userService = userService;
+        this.indexUtil = indexUtil;
+        this.jobService = jobService;
+        this.blackListService = blackListService;
+        this.filenameParser = filenameParser;
+    }
 
     /**
      * 登录认证
@@ -75,6 +83,8 @@ public class UserController {
 //        登录成功
         if (user != null
             && user.getPassword().equals(password)){
+//            登录成功后就清空Cookie中的错误次数统计
+            removeTheCountOfWrongPassCookie(request,response);
             String redirectAddress;
             user.setPassword(null);
             redirectAddress = indexUtil.getURLByUser(user);
@@ -134,6 +144,21 @@ public class UserController {
         return null;
     }
 
+    /**
+     * 一旦用户登录成功，删除之前Cookie中的信息，防止用户被冻结
+     * @param request
+     * @param response
+     */
+    void removeTheCountOfWrongPassCookie(HttpServletRequest request,
+                                         HttpServletResponse response){
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals(BlackList.USER_COOKIE)) {
+                cookie.setMaxAge(0);
+                response.addCookie(cookie);
+            }
+        }
+    }
 
     /**
      * 判断用户是否在黑名单中

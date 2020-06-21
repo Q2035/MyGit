@@ -17,11 +17,14 @@ import java.util.List;
 @Controller
 public class IndexController {
 
-    @Autowired
-    private IndexUtil indexUtil;
+    private final IndexUtil indexUtil;
 
-    @Autowired
-    private JobService jobService;
+    private final JobService jobService;
+
+    public IndexController(IndexUtil indexUtil, JobService jobService) {
+        this.indexUtil = indexUtil;
+        this.jobService = jobService;
+    }
 
     @RequestMapping({"/","/user/index","/user/","/user/login"})
     public String userIndex(HttpSession session,
