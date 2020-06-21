@@ -47,4 +47,10 @@
         <association property="clazz" column="id" select="getClazzByUserId"/>
         <association property="role" column="id" select="getRoleByUserID"/>
     </resultMap>
+
+<!--    判断账号是否被冻结-->
+<!--    2代表密码错误次数过多-->
+    <select id="ifTheAccountIsFrozen" parameterType="int" resultType="User">
+        select * from j_user where id = #{userId} and account_status = 2;
+    </select>
 </mapper>

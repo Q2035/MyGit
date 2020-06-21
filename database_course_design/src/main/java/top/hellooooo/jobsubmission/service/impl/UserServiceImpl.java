@@ -34,4 +34,9 @@ public class UserServiceImpl implements UserService {
     public List<User> getUnSubmitPersonWithJobId(Integer jobId) {
         return userMapper.getUnSubmitPersonWithJobId(jobId);
     }
+
+    @Override
+    public User ifTheAccountIsFrozen(Integer userId) {
+        return userMapper.ifTheAccountIsFrozen(userId);
+    }
 }

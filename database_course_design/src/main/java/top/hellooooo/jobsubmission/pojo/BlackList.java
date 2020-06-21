@@ -10,6 +10,10 @@ public class BlackList {
     private String device;
     private String reason;
 
+    public static String IP_SESSION = "IP_SESSION";
+    public static String USER_COOKIE = "USER_COOKIE";
+    public static Integer MAX_FAILURE_COUNT = 5;
+
     public Integer getId() {
         return id;
     }

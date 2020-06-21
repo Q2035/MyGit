@@ -12,4 +12,6 @@ public interface UserService {
     User getUserWithClazzAndRoleByUsername(String username);
 
     List<User> getUnSubmitPersonWithJobId(Integer jobId);
+
+    User ifTheAccountIsFrozen(Integer userId);
 }

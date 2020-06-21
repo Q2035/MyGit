@@ -9,10 +9,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import top.hellooooo.jobsubmission.pojo.Filename;
-import top.hellooooo.jobsubmission.pojo.Job;
-import top.hellooooo.jobsubmission.pojo.Role;
-import top.hellooooo.jobsubmission.pojo.User;
+import top.hellooooo.jobsubmission.mapper.BlackListMapper;
+import top.hellooooo.jobsubmission.pojo.*;
+import top.hellooooo.jobsubmission.service.BlackListService;
 import top.hellooooo.jobsubmission.service.JobService;
 import top.hellooooo.jobsubmission.service.UserService;
 import top.hellooooo.jobsubmission.util.CommonResult;
@@ -21,6 +20,7 @@ import top.hellooooo.jobsubmission.util.IndexUtil;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +38,9 @@ public class UserController {
 
     @Autowired
     private JobService jobService;
+
+    @Autowired
+    private BlackListService blackListService;
 
     @Autowired
     private FilenameParser filenameParser;
@@ -58,6 +61,8 @@ public class UserController {
     @PostMapping("/authentication")
     public String auth(@RequestParam("username")String username,
                      @RequestParam("password")String password,
+                     HttpServletRequest request,
+                     HttpServletResponse response,
                      Model model,
                      RedirectAttributes attributes,
                      HttpSession session){
@@ -65,6 +70,7 @@ public class UserController {
         User user = userService.getUserWithClazzAndRoleByUsername(username);
         int userLoginCount = 0;
         int ipLoginCount = 0;
+//        登录成功
         if (user != null
             && user.getPassword().equals(password)){
             String redirectAddress;
@@ -81,12 +87,34 @@ public class UserController {
             model.addAttribute("jobs", unexpiredJobs);
             return redirectAddress;
         }else {
-
             //            提示密码错误
-            String message;
+            ipLoginCount = (int) session.getAttribute(BlackList.IP_SESSION);
+            ipLoginCount += 1;
+//            只要登录失败就更新Session信息
+            session.setAttribute(BlackList.IP_SESSION,String.valueOf(ipLoginCount));
+            String message = "";
             if (user == null) {
-                message = "cann't find the user in db, please check the username";
+                message = "can't find the user in db, please check the username";
             }else {
+    //            之前登录过
+                Integer loginCountFromCookie = getLoginCountFromCookie(request, username);
+                if (loginCountFromCookie != null) {
+                    userLoginCount += 1;
+                    Cookie cookie = new Cookie(BlackList.USER_COOKIE,String.valueOf(userLoginCount));
+                    cookie.setPath("/");
+    //                默认30分钟
+                    cookie.setMaxAge(30 * 60);
+                    response.addCookie(cookie);
+                }
+
+                if (userLoginCount > BlackList.MAX_FAILURE_COUNT) {
+                    message = "Too many errors and the account {" + username + "} is frozen!\n";
+    //                先查询数据库账号是否已存在
+
+                }
+                if (ipLoginCount > BlackList.MAX_FAILURE_COUNT) {
+                    message += "Too many errors and the ip {"+ request.getRemoteAddr() +"} is frozen";
+                }
                 message = "fail to login, please check your username or password.";
             }
             attributes.addFlashAttribute("message",message);

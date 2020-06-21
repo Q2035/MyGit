@@ -5,4 +5,10 @@
         insert into j_black_list (user_id, happen_time, ip, device, reason)
         values (#{userId}, #{happen_time}, #{ip}, #{device}, #{reason})
     </insert>
+
+<!--    更新用户账号状态-->
+    <update id="updateUserAccountStatus">
+        update j_user set account_status = #{accountStatus} where
+        id = #{userId}
+    </update>
 </mapper>
