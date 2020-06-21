@@ -3,6 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>LOGIN</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script th:src="@{/js/jquery.md5.js}" src="/js/jquery.md5.js"></script>
+    <script>
+        function checking() {
+            var password=$("input[name='password']")[0].value;
+            password =$.md5(password);
+            alert(password)
+            $("input[name='password']")[0].value =password;
+        }
+    </script>
+</head>
 <body>
 <div style="position: center">
     <p th:text="${message}"></p>
@@ -11,7 +22,7 @@
         <br/>
         password:<input name="password" type="password">
         <br/>
-        <input type="submit" value="SUBMIT"/>
+        <input type="submit"  onclick="checking()" value="SUBMIT"/>
     </form>
 </div>
 </body>

@@ -14,8 +14,11 @@ import java.util.List;
 @Service
 public class BlackListServiceImpl implements BlackListService {
 
-    @Autowired
-    private BlackListMapper blackListMapper;
+    private final BlackListMapper blackListMapper;
+
+    public BlackListServiceImpl(BlackListMapper blackListMapper) {
+        this.blackListMapper = blackListMapper;
+    }
 
     @Override
     public void setBlackListByUser(User user) {

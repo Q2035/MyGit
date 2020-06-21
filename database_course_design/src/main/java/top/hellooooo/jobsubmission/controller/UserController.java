@@ -93,9 +93,12 @@ public class UserController {
             List<Job> unexpiredJobs;
             if (user.getRole().getRoleName().contains(Role.MANAGER)) {
                  unexpiredJobs = jobService.getUnexpiredJobs();
-            }else {
+            } else if (user.getRole().getRoleName().contains(Role.ADMIN)) {
+
+            } else {
                 unexpiredJobs = jobService.getCurrentJobByUserId(user.getId());
             }
+
             model.addAttribute("jobs", unexpiredJobs);
             return redirectAddress;
         }else {
