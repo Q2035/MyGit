@@ -6,7 +6,6 @@ public class SubmitPerson {
     private Integer id;
     private Integer userId;
     private Integer jobId;
-    private Boolean ifSubmit;
     private Date submitTime;
 
     public Integer getId() {
@@ -31,14 +30,6 @@ public class SubmitPerson {
 
     public void setJobId(Integer jobId) {
         this.jobId = jobId;
-    }
-
-    public Boolean getIfSubmit() {
-        return ifSubmit;
-    }
-
-    public void setIfSubmit(Boolean ifSubmit) {
-        this.ifSubmit = ifSubmit;
     }
 
     public Date getSubmitTime() {

@@ -20,7 +20,7 @@ create table j_user_role(
     user_id int unique,
     role_id int,
     foreign key(user_id) references j_user(id),
-    foreign key(role_id) references j_user_role(id)
+    foreign key(role_id) references j_role(id)
 );
 
 create table j_black_list(
@@ -47,7 +47,6 @@ create table j_submit_person(
     id int primary key auto_increment,
     user_id int,
     job_id int,
-    if_submit int,
     submit_time datetime,
     foreign key(user_id) references j_user(id),
     foreign key(job_id) references j_job(id)

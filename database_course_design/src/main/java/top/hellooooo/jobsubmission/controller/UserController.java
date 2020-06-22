@@ -90,11 +90,9 @@ public class UserController {
             redirectAddress = indexUtil.getURLByUser(user);
             session.setAttribute("user",user);
 //            如果登录者为管理员，则将所有未过期Job信息传回前端
-            List<Job> unexpiredJobs;
+            List<Job> unexpiredJobs = null;
             if (user.getRole().getRoleName().contains(Role.MANAGER)) {
                  unexpiredJobs = jobService.getUnexpiredJobs();
-            } else if (user.getRole().getRoleName().contains(Role.ADMIN)) {
-
             } else {
                 unexpiredJobs = jobService.getCurrentJobByUserId(user.getId());
             }

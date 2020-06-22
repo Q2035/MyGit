@@ -120,7 +120,6 @@ public class ManagerController {
             List<SubmitPerson> submitPersonList = new ArrayList<>();
             for (SubmitPerson user : userByClazzId) {
                 SubmitPerson e = new SubmitPerson();
-                e.setIfSubmit(false);
 //                无法获取JobID
                 e.setJobId(getJobIdAfterInsert(session));
                 e.setUserId(user.getId());
