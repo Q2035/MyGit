@@ -96,4 +96,8 @@ create table j_user_clazz(
     clazz_id int,
     foreign key (user_id) references j_user(id),
     foreign key (clazz_id) references j_clazz(id)
-)
+);
+
+create user 'job'@'localhost' identified by '123456';
+
+grant insert,delete,select,update on job.* to 'job'@'localhost';

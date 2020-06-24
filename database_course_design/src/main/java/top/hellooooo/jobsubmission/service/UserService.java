@@ -14,4 +14,8 @@ public interface UserService {
     List<User> getUnSubmitPersonWithJobId(Integer jobId);
 
     User ifTheAccountIsFrozen(Integer userId);
+
+    List<User> getAllUsers();
+
+    void deleteUser(Integer id);
 }

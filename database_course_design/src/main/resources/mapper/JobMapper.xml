@@ -70,4 +70,9 @@
     <select id="getFilenameByJobId" parameterType="int" resultType="Filename">
         select * from j_file_name where job_id = #{jobId};
     </select>
+
+<!--    删除j_submit_person表中的用户数据-->
+    <delete id="dropSubmitPersonByUserId" parameterType="int">
+        delete from j_submit_person where user_id = #{id}
+    </delete>
 </mapper>

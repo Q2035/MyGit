@@ -39,4 +39,14 @@ public class UserServiceImpl implements UserService {
     public User ifTheAccountIsFrozen(Integer userId) {
         return userMapper.ifTheAccountIsFrozen(userId);
     }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userMapper.getAllUsers();
+    }
+
+    @Override
+    public void deleteUser(Integer id) {
+
+    }
 }

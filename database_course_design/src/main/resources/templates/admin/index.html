@@ -6,6 +6,20 @@
 </head>
 <body>
 <h1>ADMIN INDEX</h1>
+<table border="1" th:if="${#arrays.length(users)}!=0">
+    <tr>
+        <td>count</td>
+        <td>username</td>
+        <td>delete</td>
+    </tr>
+    <th:block th:each="user,step:${users}">
+        <tr>
+            <td th:text="${step.count}"></td>
+            <td th:text="${user.username}"></td>
+            <td ><a style="color: red" th:text="delete" th:href="@{/job/admin/userdelete/{id}(id=${user.id})}"></a></td>
+        </tr>
+    </th:block>
+</table>
 <a th:href="@{/job/user/logout}">logout</a>
 </body>
 </html>

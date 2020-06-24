@@ -44,4 +44,6 @@ public interface JobMapper {
     void setFilename(Filename filename);
 
     Filename getFilenameByJobId(Integer jobId);
+
+    void dropSubmitPersonByUserId(Integer id);
 }

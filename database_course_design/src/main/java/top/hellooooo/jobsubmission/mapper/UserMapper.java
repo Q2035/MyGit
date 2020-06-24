@@ -17,4 +17,6 @@ public interface UserMapper {
     List<User> getUnSubmitPersonWithJobId(Integer jobId);
 
     User ifTheAccountIsFrozen(Integer userId);
+
+    List<User> getAllUsers();
 }

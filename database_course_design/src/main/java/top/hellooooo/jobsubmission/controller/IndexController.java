@@ -8,6 +8,7 @@ import top.hellooooo.jobsubmission.pojo.Job;
 import top.hellooooo.jobsubmission.pojo.Role;
 import top.hellooooo.jobsubmission.pojo.User;
 import top.hellooooo.jobsubmission.service.JobService;
+import top.hellooooo.jobsubmission.service.UserService;
 import top.hellooooo.jobsubmission.util.IndexUtil;
 
 import javax.servlet.http.HttpSession;
@@ -20,6 +21,9 @@ public class IndexController {
     private final IndexUtil indexUtil;
 
     private final JobService jobService;
+
+    @Autowired
+    private UserService userService;
 
     public IndexController(IndexUtil indexUtil, JobService jobService) {
         this.indexUtil = indexUtil;
@@ -38,7 +42,10 @@ public class IndexController {
                 model.addAttribute("jobs",jobs);
             } else if (urlByUser.contains("user")) {
                 List<Job> jobs = jobService.getCurrentJobByUserId(((User) user).getId());
-                model.addAttribute("jobs",jobs);
+                model.addAttribute("jobs", jobs);
+//                管理员提供用户
+            } else {
+                model.addAttribute("users", userService.getAllUsers());
             }
             return urlByUser;
         }

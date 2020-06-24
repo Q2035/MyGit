@@ -53,4 +53,10 @@
     <select id="ifTheAccountIsFrozen" parameterType="int" resultType="User">
         select * from j_user where id = #{userId} and account_status = 2;
     </select>
+
+<!--    获取数据库中所有用户-->
+    <select id="getAllUsers" resultType="User">
+        select *
+        from j_user;
+    </select>
 </mapper>
