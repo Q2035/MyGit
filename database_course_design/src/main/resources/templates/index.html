@@ -9,7 +9,6 @@
         function checking() {
             var password=$("input[name='password']")[0].value;
             password =$.md5(password);
-            alert(password)
             $("input[name='password']")[0].value =password;
         }
     </script>

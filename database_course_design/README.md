@@ -68,25 +68,19 @@
 
 URL
 
-| URL                                           | Method | Description          |
-| --------------------------------------------- | ------ | -------------------- |
-| /job/user/index;/job/user/;/job/user/login    | Get    | 登录界面             |
-| /job/user/authentication?username=xpassword=x | Post   | 登录认证             |
-| /job/user/logout                              | Get    | 登出，返回登录界面   |
-| /job/user/home                                | Get    | 用户主页面           |
-| /job/user/upload                              | Post   | 用户文件上传         |
-| /job/admin/index;/job/admin/home              | Get    | 管理员主页面         |
-| /job/admin/userdelete/{id}                    | Get    | 删除用户             |
-| /job/admin/useradd                            | Get    | 新增用户             |
-| /job/admin/changerole/{id}                    | Get    | 更改用户权限         |
-| /job/manager/index                            | Get    | 用户管理员主界面     |
-| /job/manager/jobrelease                       | Get    | 管理员发布任务界面   |
-| /job/manager/download                         | Post   | 管理员下载文件       |
-| /job/manager/jobupdate/{id}                   | Get    | 管理员发布或更新任务 |
-| /job/manager/jobdelete/{id}                   | Get    | 管理员删除任务       |
-| /job/manager/jobinfo                          | Get    | 管理员展示任务界面   |
-| /job/manager/studentimportview                | Get    | 导入学生信息界面     |
-| /job/manager/studentimport                    | Post   | 导入学生信息         |
-| /job/manager/clazzimport                      | Post   | 创建班级信息         |
-|                                               |        |                      |
+| URL                                           | Method | Description                |
+| --------------------------------------------- | ------ | -------------------------- |
+| /job/user/index;/job/user/;/job/user/login    | Get    | 登录界面                   |
+| /job/user/authentication?username=xpassword=x | Post   | 登录认证                   |
+| /job/user/logout                              | Get    | 登出，返回登录界面         |
+| /job/user/home                                | Get    | 用户主页面                 |
+| /job/user/fileupload/{jobId}                  | Get    | 用户文件上传               |
+| /job/admin/index;/job/admin/home              | Get    | 管理员主页面               |
+| /job/admin/userdelete/{Id}                    | Get    | 删除用户                   |
+| /job/manager/index                            | Get    | 用户管理员主界面           |
+| /job/manager/jobadd                           | Get   | 管理员作业发布             |
+| /job/manager/jobadd                           | Get    | 管理员发布作业界面         |
+| /job/manager/filedownload/{jobId}             | Post   | 管理员下载作业提交文件     |                         |
+| /job/manager/jobinfo                          | Get    | 管理员展示作业提交详情界面 |
+
 
