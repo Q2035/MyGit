@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>JOBUPLOAD</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<h1>JOB UPLOAD</h1>
+<h2 th:text="${job.jobDescription}"></h2>
+<h3 th:text="${job.deadline}"></h3>
+submited/all:<p th:text="|${job.submitCount}/${job.totalCount}|"></p>
+<form action="/job/user/fileupload" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" id="myFile"/>
+    <input type="hidden" id="jobId" th:value="${job.id}">
+    <input type="button" id="submitBtn" value="submit"/>
+</form>
+</body>
+<script>
+    $('#submitBtn').click(function () {
+        var formData = new FormData();
+        formData.append('file',$('#myFile')[0].files[0]);
+        formData.append("jobId",$('#jobId').val())
+        $.ajax({
+            type: 'POST',
+            url: "/job/user/fileupload",
+            data: formData,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (ret) {
+                alert(ret.message);
+            }
+        });
+    })
+</script>
+</html>

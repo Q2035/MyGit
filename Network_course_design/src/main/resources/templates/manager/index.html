@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>MANAGER INDEX</title>
+</head>
+<body>
+<h1>MANAGER INDEX</h1>
+<h2>All unmet deadlines</h2>
+<table border="1" th:if="${jobs != null}">
+    <tr>
+        <td>Job Des</td>
+        <td>Job's Deadline</td>
+        <td>Submit Count</td>
+        <td>Count of who receive the job</td>
+        <td> </td>
+    </tr>
+    <th:block th:each="job:${jobs}">
+        <tr>
+            <td><a th:text="${job.jobDescription}" th:href="@{/job/manager/jobinfo/{id}(id=${job.id})}"></a></td>
+            <td th:text="${job.deadline}"></td>
+            <td th:text="${job.submitCount}"></td>
+            <td th:text="${job.totalCount}"></td>
+            <td><a th:href="@{/job/manager/filedownload/{id}(id=${job.id})}">download</a></td>
+        </tr>
+    </th:block>
+</table>
+<a th:href="@{/job/user/logout}">logout</a>
+<a th:href="@{/job/manager/jobadd}">jobadd</a>
+<a th:href="@{/job/manager/index}">index</a>
+
+</body>
+</html>
