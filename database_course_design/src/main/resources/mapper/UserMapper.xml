@@ -61,10 +61,14 @@
     </select>
 
 <!--    获取指定用户-->
-    <select id="getUserById" parameterType="int">
+    <select id="getUserById" parameterType="int" resultMap="userRoleClazzMap">
         select *
         from j_user where id = #{id};
     </select>
+
+    <delete id="deleteTheUserRoleByUserId" parameterType="int">
+        delete from j_user_role where user_id = #{id}
+    </delete>
 
     <!--    删除用户-->
     <delete id="deleteUserByUserId" parameterType="int">

@@ -95,7 +95,8 @@ public class UserController {
                  unexpiredJobs = jobService.getUnexpiredJobs();
 //                 管理员直接跳转到管理员界面
             } else if (user.getRole().getRoleName().contains(Role.ADMIN)) {
-                model.addAttribute("users");
+                List<User> users = userService.getAllUsers();
+                model.addAttribute("users",users);
                 return redirectAddress;
             } else {
                 unexpiredJobs = jobService.getCurrentJobByUserId(user.getId());

@@ -63,6 +63,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Integer id) {
 //        将数据表中所有有关用户的数据删除
+        userMapper.deleteTheUserRoleByUserId(id);
         jobMapper.dropSubmitPersonByUserId(id);
         userClazzMapper.deleteUserClazzByUserId(id);
         blackListMapper.deleteBlackListByUserId(id);

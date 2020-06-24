@@ -22,5 +22,7 @@ public interface UserMapper {
 
     void deleteUserByUserId(Integer id);
 
+    void deleteTheUserRoleByUserId(Integer id);
+
     User getUserById(Integer id);
 }
