@@ -10,4 +10,6 @@ public interface BlackListMapper {
     void updateUserAccountStatus(Integer userId,Integer accountStatus);
 
     List<BlackList> getBlackListByIP(String ip);
+
+    void deleteBlackListByUserId(Integer id);
 }

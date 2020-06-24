@@ -59,4 +59,15 @@
         select *
         from j_user;
     </select>
+
+<!--    获取指定用户-->
+    <select id="getUserById" parameterType="int">
+        select *
+        from j_user where id = #{id};
+    </select>
+
+    <!--    删除用户-->
+    <delete id="deleteUserByUserId" parameterType="int">
+        delete from j_user where id = #{id}
+    </delete>
 </mapper>

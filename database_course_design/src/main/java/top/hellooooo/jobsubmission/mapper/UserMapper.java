@@ -19,4 +19,8 @@ public interface UserMapper {
     User ifTheAccountIsFrozen(Integer userId);
 
     List<User> getAllUsers();
+
+    void deleteUserByUserId(Integer id);
+
+    User getUserById(Integer id);
 }

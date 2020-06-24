@@ -12,4 +12,9 @@
         id = #{userId}
     </update>
 
+<!--    通过用户ID删除黑名单信息-->
+    <delete id="deleteBlackListByUserId" parameterType="int">
+        delete from j_black_list where user_id = #{id}
+    </delete>
+
 </mapper>

@@ -2,6 +2,9 @@ package top.hellooooo.jobsubmission.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import top.hellooooo.jobsubmission.mapper.BlackListMapper;
+import top.hellooooo.jobsubmission.mapper.JobMapper;
+import top.hellooooo.jobsubmission.mapper.UserClazzMapper;
 import top.hellooooo.jobsubmission.mapper.UserMapper;
 import top.hellooooo.jobsubmission.pojo.User;
 import top.hellooooo.jobsubmission.service.UserService;
@@ -11,8 +14,20 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserMapper userMapper;
+    private final UserMapper userMapper;
+
+    private final JobMapper jobMapper;
+
+    private final BlackListMapper blackListMapper;
+
+    private final UserClazzMapper userClazzMapper;
+
+    public UserServiceImpl(UserMapper userMapper, JobMapper jobMapper, BlackListMapper blackListMapper, UserClazzMapper userClazzMapper) {
+        this.userMapper = userMapper;
+        this.jobMapper = jobMapper;
+        this.blackListMapper = blackListMapper;
+        this.userClazzMapper = userClazzMapper;
+    }
 
     @Override
     public User getUserByUsername(String username) {
@@ -47,6 +62,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Integer id) {
+//        将数据表中所有有关用户的数据删除
+        jobMapper.dropSubmitPersonByUserId(id);
+        userClazzMapper.deleteUserClazzByUserId(id);
+        blackListMapper.deleteBlackListByUserId(id);
+        userMapper.deleteUserByUserId(id);
+    }
 
+    @Override
+    public User getUserById(Integer id) {
+        return userMapper.getUserById(id);
     }
 }

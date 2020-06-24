@@ -13,4 +13,10 @@
         select * from j_user user join j_user_clazz clazz on
         user.id = clazz.user_id and clazz.clazz_id in (${ids})
     </select>
+
+<!--    删除用户班级信息-->
+    <delete id="deleteUserClazzByUserId" parameterType="int">
+        delete from j_user_clazz where user_id = #{id}
+    </delete>
+
 </mapper>
