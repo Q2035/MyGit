@@ -38,8 +38,8 @@
 
 <!--    获取未提交的人的信息-->
     <select id="getUnSubmitPersonWithJobId" parameterType="int" resultMap="userRoleClazzMap">
-        select user.* from j_user user join j_job job join j_submit_person person join j_user_clazz user_clazz join j_clazz clazz
-        on job.id = #{jobId} and person.job_id = job.id and person.user_id = user.id and user_clazz.user_id = user.id and user_clazz.clazz_id = clazz.id
+        select user.* from j_user user join j_submit_person person join j_user_clazz user_clazz join j_clazz clazz on person.job_id = #{jobId}
+        and person.user_id = user.id and user_clazz.user_id = user.id and user_clazz.clazz_id = clazz.id and person.submit_time is null
     </select>
 
     <resultMap id="userRoleClazzMap" type="User">

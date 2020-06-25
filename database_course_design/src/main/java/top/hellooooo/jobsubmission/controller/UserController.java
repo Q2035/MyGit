@@ -227,7 +227,7 @@ public class UserController {
         }
         String fileName = file.getOriginalFilename();
         String contentType = file.getContentType();
-        logger.info("upload name:{} type:{}",fileName, contentType);
+        logger.info("{} upload name:{} type:{}",user.getUsername(),fileName, contentType);
         String[] split = fileName.split("\\.");
 //        从数据库中取出Filename对象
         Filename filenameByJobId = jobService.getFilenameByJobId(jobId);

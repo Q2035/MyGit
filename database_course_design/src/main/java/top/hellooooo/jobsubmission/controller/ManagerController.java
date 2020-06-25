@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import top.hellooooo.jobsubmission.pojo.*;
 import top.hellooooo.jobsubmission.service.JobService;
 import top.hellooooo.jobsubmission.service.UserClazzService;
@@ -83,7 +84,6 @@ public class ManagerController {
      * @param deadline
      * @param job_description
      * @param filename 要求的Job文件名格式 未指定的部分默认为空字符串，而不是null
-     * @param model
      * @param clazz
      * @param session
      * @return
@@ -93,10 +93,9 @@ public class ManagerController {
     public String jobadd(String deadline,
                          String job_description,
                          Filename filename,
-                         Model model,
                          String clazz,
-                         HttpSession session) {
-        CommonResult result = new CommonResult();
+                         HttpSession session,
+                         RedirectAttributes attributes) {
         try {
             Date parse = simpleDateFormat.parse(deadline);
 //            实例化Job，将发起人、开始、结束时间等放入
@@ -105,7 +104,8 @@ public class ManagerController {
 //            设置Job提交时间
             job.setSubmitTime(new Date());
             job.setDeadline(parse);
-            job.setOriginator(((User) session.getAttribute("user")).getId());
+            User currentUser = (User) session.getAttribute("user");
+            job.setOriginator(currentUser.getId());
             job.setJobDescription(job_description);
             job.setSubmitCount(0);
 //            从数据库获取选中班级的总人数
@@ -127,15 +127,15 @@ public class ManagerController {
             }
 //            将生成的对象插入数据库
             jobService.insertJobSubmitPerson(submitPersonList);
+            job = jobService.getJobAfterInsert(currentUser.getId());
 //            将文件格式信息插入数据库
             filename.setJobId(job.getId());
             jobService.setFilename(filename);
         } catch (ParseException e) {
-            result.setMessage("Error! The deadline is illegal!");
+            attributes.addFlashAttribute("message","Error! The deadline is illegal!");
             e.printStackTrace();
         }
-        model.addAttribute("result", result);
-        return "/manager/index";
+        return "redirect:/job/manager/index";
     }
 
     /**

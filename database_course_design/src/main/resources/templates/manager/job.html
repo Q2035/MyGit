@@ -38,7 +38,7 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">separator:</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="separat" required lay-verify="email" placeholder="separator" autocomplete="off" class="layui-input">
+                        <input type="text" name="separat" placeholder="separator" autocomplete="off" class="layui-input">
                     </div>
                     <div class="layui-form-mid layui-word-aux">The separator will be used to separate the filename.</div>
                 </div>
@@ -84,7 +84,7 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">Clazz:</label>
                     <div class="layui-input-inline">
-                        <input type="checkbox" th:each="clazz: ${allclazz}" th:name="clazz" th:title="|${clazz.getClazzName()}:${clazz.getTotalCount()}|人" th:value="${clazz.getId()}">
+                        <input type="checkbox" th:each="clazz: ${allclazz}" th:name="clazz" th:title="|${clazz.getClazzName()}:${clazz.getTotalCount()}人|" th:value="${clazz.getId()}">
                     </div>
                     <div class="layui-form-mid layui-word-aux">Choose the Clazz(with total count)</div>
                 </div>
