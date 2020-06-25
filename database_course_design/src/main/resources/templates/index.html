@@ -1,28 +1,66 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>LOGIN</title>
-    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script th:src="@{/js/jquery.md5.js}" src="/js/jquery.md5.js"></script>
-    <script>
-        function checking() {
-            var password=$("input[name='password']")[0].value;
-            password =$.md5(password);
-            $("input[name='password']")[0].value =password;
-        }
-    </script>
+<head th:replace="fragments::head(~{::title})">
+    <title>Login</title>
 </head>
-<body>
-<div style="position: center">
-    <p th:text="${message}"></p>
-    <form method="post" th:action="@{/job/user/authentication}">
-        username:<input name="username" type="text"/>
-        <br/>
-        password:<input name="password" type="password">
-        <br/>
-        <input type="submit"  onclick="checking()" value="SUBMIT"/>
-    </form>
+
+<body style="background-color: #F2F2F2">
+<br />
+<div class="layui-container">
+
+    <div class="layui-row">
+        <div class="layui-col-xs4 layui-col-sm7 layui-col-md8">
+            <div class="grid-demo layui-bg-green">|</div>
+            <br />
+            <blockquote class="layui-elem-quote" th:text="${message}" th:if="${message}!=null">please input the username and password</blockquote>
+            <blockquote class="layui-elem-quote" th:if="${message}==null">please input the username and password</blockquote>
+            <form class="layui-form" th:action="@{/job/user/authentication}" method="post">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">username:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="username" required lay-verify="required" placeholder="username" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">password:</label>
+                    <div class="layui-input-inline">
+                        <input type="password" name="password" required lay-verify="required" placeholder="password" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="formData">submit</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">reset</button>
+                        <button class="layui-btn layui-btn-primary" onclick="window.history.go(-1)">back</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
+
 </body>
+<!--/*/<th:block th:replace="fragments :: script">/*/-->
+<!--/*/</th:block>/*/-->
+<script>
+    function checking() {
+        var password=$("input[name='password']")[0].value;
+        password =$.md5(password);
+        $("input[name='password']")[0].value =password;
+        return password
+    }
+</script>
+<script>
+    layui.use('form', function(){
+        var form = layui.form;
+
+        //监听提交
+        form.on('submit(formData)', function(data){
+            layer.msg("wait..")
+            //加密
+            data.field.password = checking()
+            console.log(data.field)
+        });
+    });
+</script>
 </html>

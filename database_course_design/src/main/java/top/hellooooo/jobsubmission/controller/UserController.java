@@ -1,5 +1,8 @@
 package top.hellooooo.jobsubmission.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +25,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 
 @RequestMapping("job/user")
@@ -59,25 +64,21 @@ public class UserController {
         this.filenameParser = filenameParser;
     }
 
-    /**
-     * 登录认证
-     * @param username
-     * @param password
-     * @param session
-     * @return
-     */
+
     @PostMapping("/authentication")
-    public String auth(@RequestParam("username")String username,
-                     @RequestParam("password")String password,
+    public String auth(@RequestParam("username") String username,
+                     @RequestParam("password") String password,
                      HttpServletRequest request,
                      HttpServletResponse response,
                      Model model,
                      HttpSession session){
 //        将用户信息存入Session
         User user = userService.getUserWithClazzAndRoleByUsername(username);
-        if (ifUserInBlackList(user)) {
-            model.addAttribute("message", "The account has been frozen, please contact the administrator");
-            return "index";
+        if (user != null) {
+            if (ifUserInBlackList(user)) {
+                model.addAttribute("message", "The account has been frozen, please contact the administrator");
+                return "index";
+            }
         }
         int userLoginCount = 1;
 //        登录成功
