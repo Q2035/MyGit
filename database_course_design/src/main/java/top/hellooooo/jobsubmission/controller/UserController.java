@@ -1,8 +1,5 @@
 package top.hellooooo.jobsubmission.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,8 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.List;
 
 @RequestMapping("job/user")
@@ -72,7 +67,6 @@ public class UserController {
                      HttpServletResponse response,
                      Model model,
                      HttpSession session){
-//        将用户信息存入Session
         User user = userService.getUserWithClazzAndRoleByUsername(username);
         if (user != null) {
             if (ifUserInBlackList(user)) {
@@ -89,6 +83,7 @@ public class UserController {
             String redirectAddress;
             user.setPassword(null);
             redirectAddress = indexUtil.getURLByUser(user);
+//        将用户信息存入Session
             session.setAttribute("user",user);
 //            如果登录者为管理员，则将所有未过期Job信息传回前端
             List<Job> unexpiredJobs = null;
@@ -112,7 +107,7 @@ public class UserController {
                 message = "can't find the user in db, please check the username";
             }else {
     //            之前登录过
-                Integer loginCountFromCookie = getLoginCountFromCookie(request, username);
+                Integer loginCountFromCookie = getLoginCountFromCookie(request);
                 if (loginCountFromCookie != null) {
                     userLoginCount = loginCountFromCookie + 1;
                 }
@@ -138,10 +133,9 @@ public class UserController {
     /**
      * 如果Cookie中不存在对应信息，返回null
      * @param request
-     * @param username
      * @return
      */
-    Integer getLoginCountFromCookie(HttpServletRequest request,String username) {
+    Integer getLoginCountFromCookie(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(BlackList.USER_COOKIE)) {

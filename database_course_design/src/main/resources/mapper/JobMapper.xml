@@ -6,21 +6,6 @@
         values(#{job_description}, #{originator}, #{start_time}, #{deadline}, #{submit_count}, #{total_count})
     </insert>
 
-<!--    将Job对象插入数据库-->
-    <insert id="jobAdd" parameterType="Job">
-        insert into j_job(job_description, originator, start_time, deadline, submit_count, total_count, submit_time)
-        values (#{jobDescription},#{originator},#{startTime},#{deadline},#{submitCount},#{totalCount},#{submitTime})
-    </insert>
-
-<!--    将需要提交作业的用户插入数据库-->
-    <insert id="insertJobSubmitPerson" parameterType="SubmitPerson">
-        insert into j_submit_person(user_id, job_id)
-        values
-        <foreach collection="list" item="each" separator=",">
-            (#{each.userId}, #{each.jobId})
-        </foreach>
-    </insert>
-
 <!--    返回新插入的Job，为了获取Job_ID-->
     <select id="getJobAfterInsert" parameterType="int" resultType="Job">
         select * from j_job where originator = #{user_id} order by submit_time desc limit 1;
@@ -53,6 +38,12 @@
         person.user_id = #{userId} and job.id = person.job_id;
     </select>
 
+<!--    将Job对象插入数据库-->
+    <insert id="jobAdd" parameterType="Job">
+        insert into j_job(job_description, originator, start_time, deadline, submit_count, total_count, submit_time)
+        values (#{jobDescription},#{originator},#{startTime},#{deadline},#{submitCount},#{totalCount},#{submitTime})
+    </insert>
+
     <update id="updateJobSubmitCount" parameterType="int">
         update j_job set submit_count = submit_count + 1 where id = #{jobId};
     </update>
@@ -64,6 +55,15 @@
     <insert id="setFilename" parameterType="Filename">
         insert into j_file_name (part_count, job_id, separat, part1, part2, part3, part4, part5, part6)
         values (#{partCount}, #{jobId}, #{separat}, #{part1}, #{part2}, #{part3}, #{part4}, #{part5}, #{part6});
+    </insert>
+
+<!--    将需要提交作业的用户插入数据库-->
+    <insert id="insertJobSubmitPerson" parameterType="SubmitPerson">
+        insert into j_submit_person(user_id, job_id)
+        values
+        <foreach collection="list" item="each" separator=",">
+            (#{each.userId}, #{each.jobId})
+        </foreach>
     </insert>
 
 <!--    Filename getFilenameByJobId(Integer jobId);-->

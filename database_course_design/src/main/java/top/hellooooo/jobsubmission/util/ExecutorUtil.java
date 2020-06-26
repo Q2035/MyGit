@@ -37,7 +37,7 @@ public class ExecutorUtil{
         this.emailUtil = emailUtil;
     }
 
-//    @Scheduled(initialDelay = 0, fixedDelay = 24 * 60 * 60 * 1000)
+    @Scheduled(initialDelay = 0, fixedDelay = 24 * 60 * 60 * 1000)
     public void execute() {
 //        提交任务，一天检查一次数据库，截止日期是否快过到了
         List<Job> unexpiredJobs = jobService.getUnexpiredJobs();
