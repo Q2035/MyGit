@@ -19,4 +19,7 @@
         delete from j_user_clazz where user_id = #{id}
     </delete>
 
+    <insert id="setClazz" >
+        insert into j_user_clazz(user_id, clazz_id) VALUES (#{userId},#{clazzId})
+    </insert>
 </mapper>

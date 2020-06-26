@@ -74,4 +74,12 @@
     <delete id="deleteUserByUserId" parameterType="int">
         delete from j_user where id = #{id}
     </delete>
+
+    <insert id="setUser" parameterType="User">
+        insert into j_user(username, password) values (#{username},#{password})
+    </insert>
+
+    <insert id="setUserRole">
+        insert into j_user_role(user_id, role_id) values (#{userId},#{roleId})
+    </insert>
 </mapper>

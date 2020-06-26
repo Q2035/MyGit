@@ -15,4 +15,6 @@ public interface UserClazzMapper {
     List<SubmitPerson> getUserByClazzId(@Param("ids") String ids);
 
     void deleteUserClazzByUserId(Integer id);
+
+    void setClazz(@Param("userId") Integer id, @Param("clazzId") int clazzId);
 }

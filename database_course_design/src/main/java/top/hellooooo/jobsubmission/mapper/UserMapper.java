@@ -25,4 +25,8 @@ public interface UserMapper {
     void deleteTheUserRoleByUserId(Integer id);
 
     User getUserById(Integer id);
+
+    void setUser(User user);
+
+    void setUserRole(@Param("userId") Integer id, @Param("roleId") Integer roleId);
 }
