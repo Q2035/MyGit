@@ -87,7 +87,8 @@ create table j_file_name(
 
 create table j_clazz(
     id int primary key auto_increment,
-    clazz_name varchar(20)
+    clazz_name varchar(20),
+    total_count int
 );
 
 create table j_user_clazz(
