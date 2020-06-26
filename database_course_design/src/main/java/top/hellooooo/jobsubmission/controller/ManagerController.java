@@ -56,7 +56,7 @@ public class ManagerController {
     public String index(Model model){
         List<Job> unexpiredJobs = jobService.getUnexpiredJobs();
         model.addAttribute("jobs", unexpiredJobs);
-        return "/manager/index";
+        return "manager/index";
     }
 
 
@@ -75,7 +75,7 @@ public class ManagerController {
     public String jobShow(Model model) {
         List<Clazz> allClazz = userClazzService.getAllClazz();
         model.addAttribute("allclazz", allClazz);
-        return "/manager/job";
+        return "manager/job";
     }
 
 

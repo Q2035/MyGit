@@ -182,7 +182,7 @@ public class UserController {
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.removeAttribute("user");
-        return "/index";
+        return "index";
     }
 
     @GetMapping("/fileupload/{id}")
@@ -190,7 +190,7 @@ public class UserController {
                          Model model){
         Job job = jobService.getJobByJobId(id);
         model.addAttribute("job", job);
-        return "/user/jobupload";
+        return "user/jobupload";
     }
 
 
