@@ -1,4 +1,4 @@
-package top.hellooooo.jobsubmission.pojo;
+package main.java.top.hellooooo.jobsubmission.pojo;
 
 public class Clazz {
     private Integer id;

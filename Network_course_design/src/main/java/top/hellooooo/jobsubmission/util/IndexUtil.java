@@ -1,4 +1,4 @@
-package top.hellooooo.jobsubmission.util;
+package main.java.top.hellooooo.jobsubmission.util;
 
 import org.springframework.stereotype.Component;
 import top.hellooooo.jobsubmission.pojo.Role;

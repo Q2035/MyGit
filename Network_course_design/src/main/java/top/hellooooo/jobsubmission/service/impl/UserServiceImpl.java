@@ -1,4 +1,4 @@
-package top.hellooooo.jobsubmission.service.impl;
+package main.java.top.hellooooo.jobsubmission.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

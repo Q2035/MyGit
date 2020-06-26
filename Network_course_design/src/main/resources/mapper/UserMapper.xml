@@ -6,10 +6,11 @@
         where username = #{username}
     </select>
 
-    <select id="getRoleByUserID" resultType="Role">
-        select role.* from j_role role,j_user_role user_role
-        where user_role.user_id = #{id} and role.id = user_role.role_id;
-    </select>
+
+    <resultMap id="userClazzMap" type="User">
+        <id property="id" column="id"/>
+        <association property="clazz" column="id" select="getClazzByUserId"/>
+    </resultMap>
 
     <resultMap id="userMap" type="User">
         <id property="id" column="id"/>
@@ -21,25 +22,18 @@
         select * from j_user where id = #{id};
     </select>
 
-    <select id="getClazzByUserId" parameterType="int" resultType="Clazz">
-        select clazz.* from j_user_clazz user_clazz join j_clazz clazz
-        on user_clazz.user_id = #{id} and user_clazz.clazz_id = clazz.id
-    </select>
-    
-    <resultMap id="userClazzMap" type="User">
-        <id property="id" column="id"/>
-        <association property="clazz" column="id" select="getClazzByUserId"/>
-    </resultMap>
-
-
     <select id="getUserWithClazzAndRoleByUsername" parameterType="string" resultMap="userRoleClazzMap">
         select * from j_user where username = #{username}
     </select>
 
-<!--    获取未提交的人的信息-->
-    <select id="getUnSubmitPersonWithJobId" parameterType="int" resultMap="userRoleClazzMap">
-        select user.* from j_user user join j_job job join j_submit_person person join j_user_clazz user_clazz join j_clazz clazz
-        on job.id = #{jobId} and person.job_id = job.id and person.user_id = user.id and user_clazz.user_id = user.id and user_clazz.clazz_id = clazz.id
+    <select id="getClazzByUserId" parameterType="int" resultType="Clazz">
+        select clazz.* from j_user_clazz user_clazz join j_clazz clazz
+        on user_clazz.user_id = #{id} and user_clazz.clazz_id = clazz.id
+    </select>
+
+    <select id="getRoleByUserID" resultType="Role">
+        select role.* from j_role role,j_user_role user_role
+        where user_role.user_id = #{id} and role.id = user_role.role_id;
     </select>
 
     <resultMap id="userRoleClazzMap" type="User">
@@ -47,6 +41,12 @@
         <association property="clazz" column="id" select="getClazzByUserId"/>
         <association property="role" column="id" select="getRoleByUserID"/>
     </resultMap>
+
+<!--    获取未提交的人的信息-->
+    <select id="getUnSubmitPersonWithJobId" parameterType="int" resultMap="userRoleClazzMap">
+        select user.* from j_user user join j_submit_person person join j_user_clazz user_clazz join j_clazz clazz on person.job_id = #{jobId}
+        and person.user_id = user.id and user_clazz.user_id = user.id and user_clazz.clazz_id = clazz.id and person.submit_time is null
+    </select>
 
 <!--    判断账号是否被冻结-->
 <!--    2代表密码错误次数过多-->

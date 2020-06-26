@@ -1,33 +1,52 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>MANAGER INDEX</title>
+<head th:replace="fragments::head(~{::title})">
+    <title>Manager Index</title>
 </head>
-<body>
-<h1>MANAGER INDEX</h1>
-<h2>All unmet deadlines</h2>
-<table border="1" th:if="${jobs != null}">
-    <tr>
-        <td>Job Des</td>
-        <td>Job's Deadline</td>
-        <td>Submit Count</td>
-        <td>Count of who receive the job</td>
-        <td> </td>
-    </tr>
-    <th:block th:each="job:${jobs}">
-        <tr>
-            <td><a th:text="${job.jobDescription}" th:href="@{/job/manager/jobinfo/{id}(id=${job.id})}"></a></td>
-            <td th:text="${job.deadline}"></td>
-            <td th:text="${job.submitCount}"></td>
-            <td th:text="${job.totalCount}"></td>
-            <td><a th:href="@{/job/manager/filedownload/{id}(id=${job.id})}">download</a></td>
-        </tr>
-    </th:block>
-</table>
-<a th:href="@{/job/user/logout}">logout</a>
-<a th:href="@{/job/manager/jobadd}">jobadd</a>
-<a th:href="@{/job/manager/index}">index</a>
 
+<body style="background-color: #F2F2F2">
+<br />
+<div class="layui-container">
+
+    <div class="layui-row">
+        <div class="layui-col-xs4 layui-col-sm7 layui-col-md8">
+            <div class="grid-demo layui-bg-green">|</div>
+            <br />
+            <blockquote class="layui-elem-quote">Hello,Manager. Here is the no overdue job.</blockquote>
+            <table class="layui-table" th:if="${jobs != null}">
+                <colgroup>
+                    <col width="150">
+                    <col width="200">
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>Job Des</th>
+                    <th>Job's Deadline</th>
+                    <th>Submit Count</th>
+                    <th>Count of person receive the job</th>
+                    <th> </th>
+                </tr>
+                </thead>
+                <tbody>
+                <th:block th:each="job:${jobs}">
+                    <tr>
+                        <td><a th:text="${job.jobDescription}" th:href="@{/job/manager/jobinfo/{id}(id=${job.id})}"></a></td>
+                        <td th:text="${job.deadline}"></td>
+                        <td th:text="${job.submitCount}"></td>
+                        <td th:text="${job.totalCount}"></td>
+                        <td><a th:href="@{/job/manager/filedownload/{id}(id=${job.id})}">download</a></td>
+                    </tr>
+                </th:block>
+                </tbody>
+            </table>
+            <a th:href="@{/job/user/logout}" class="layui-btn">logout</a>
+            <a th:href="@{/job/manager/jobadd}" class="layui-btn">jobadd</a>
+            <a th:href="@{/job/manager/index}" class="layui-btn">index</a>
+        </div>
+    </div>
+</div>
 </body>
+<!--/*/<th:block th:replace="fragments :: script">/*/-->
+<!--/*/</th:block>/*/-->
 </html>

@@ -1,4 +1,4 @@
-package top.hellooooo.jobsubmission.controller;
+package main.java.top.hellooooo.jobsubmission.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,25 +59,20 @@ public class UserController {
         this.filenameParser = filenameParser;
     }
 
-    /**
-     * 登录认证
-     * @param username
-     * @param password
-     * @param session
-     * @return
-     */
+
     @PostMapping("/authentication")
-    public String auth(@RequestParam("username")String username,
-                     @RequestParam("password")String password,
+    public String auth(@RequestParam("username") String username,
+                     @RequestParam("password") String password,
                      HttpServletRequest request,
                      HttpServletResponse response,
                      Model model,
                      HttpSession session){
-//        将用户信息存入Session
         User user = userService.getUserWithClazzAndRoleByUsername(username);
-        if (ifUserInBlackList(user)) {
-            model.addAttribute("message", "The account has been frozen, please contact the administrator");
-            return "index";
+        if (user != null) {
+            if (ifUserInBlackList(user)) {
+                model.addAttribute("message", "The account has been frozen, please contact the administrator");
+                return "index";
+            }
         }
         int userLoginCount = 1;
 //        登录成功
@@ -88,6 +83,7 @@ public class UserController {
             String redirectAddress;
             user.setPassword(null);
             redirectAddress = indexUtil.getURLByUser(user);
+//        将用户信息存入Session
             session.setAttribute("user",user);
 //            如果登录者为管理员，则将所有未过期Job信息传回前端
             List<Job> unexpiredJobs = null;
@@ -111,7 +107,7 @@ public class UserController {
                 message = "can't find the user in db, please check the username";
             }else {
     //            之前登录过
-                Integer loginCountFromCookie = getLoginCountFromCookie(request, username);
+                Integer loginCountFromCookie = getLoginCountFromCookie(request);
                 if (loginCountFromCookie != null) {
                     userLoginCount = loginCountFromCookie + 1;
                 }
@@ -137,10 +133,9 @@ public class UserController {
     /**
      * 如果Cookie中不存在对应信息，返回null
      * @param request
-     * @param username
      * @return
      */
-    Integer getLoginCountFromCookie(HttpServletRequest request,String username) {
+    Integer getLoginCountFromCookie(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(BlackList.USER_COOKIE)) {
@@ -226,7 +221,7 @@ public class UserController {
         }
         String fileName = file.getOriginalFilename();
         String contentType = file.getContentType();
-        logger.info("upload name:{} type:{}",fileName, contentType);
+        logger.info("{} upload name:{} type:{}",user.getUsername(),fileName, contentType);
         String[] split = fileName.split("\\.");
 //        从数据库中取出Filename对象
         Filename filenameByJobId = jobService.getFilenameByJobId(jobId);

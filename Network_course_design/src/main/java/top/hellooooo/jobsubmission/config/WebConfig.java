@@ -1,4 +1,4 @@
-package top.hellooooo.jobsubmission.config;
+package main.java.top.hellooooo.jobsubmission.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

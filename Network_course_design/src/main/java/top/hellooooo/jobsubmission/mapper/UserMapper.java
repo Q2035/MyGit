@@ -1,4 +1,4 @@
-package top.hellooooo.jobsubmission.mapper;
+package main.java.top.hellooooo.jobsubmission.mapper;
 
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;

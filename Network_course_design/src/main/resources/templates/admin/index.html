@@ -1,25 +1,45 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>ADMIN INDEX</title>
+<head th:replace="fragments::head(~{::title})">
+    <title>User Info</title>
 </head>
-<body>
-<h1>ADMIN INDEX</h1>
-<table border="1" th:if="${#arrays.length(users)}!=0">
-    <tr>
-        <td>count</td>
-        <td>username</td>
-        <td>delete</td>
-    </tr>
-    <th:block th:each="user,step:${users}">
-        <tr>
-            <td th:text="${step.count}"></td>
-            <td th:text="${user.username}"></td>
-            <td ><a style="color: red" th:text="delete" th:href="@{/job/admin/userdelete/{id}(id=${user.id})}"></a></td>
-        </tr>
-    </th:block>
-</table>
-<a th:href="@{/job/user/logout}">logout</a>
+<body style="background-color: #F2F2F2">
+<br />
+<div class="layui-container">
+
+    <div class="layui-row">
+        <div class="layui-col-xs4 layui-col-sm7 layui-col-md8">
+            <div class="grid-demo layui-bg-green">|</div>
+            <br />
+            <blockquote class="layui-elem-quote">Hello,Admin. Here is the user info.</blockquote>
+            <table class="layui-table" th:if="${#arrays.length(users)}!=0">
+                <colgroup>
+                    <col width="150">
+                    <col width="200">
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>count</th>
+                    <th>username</th>
+                    <th>delete</th>
+                </tr>
+                </thead>
+                <tbody>
+                <th:block th:each="user,step:${users}">
+                    <tr>
+                        <td th:text="${step.count}"></td>
+                        <td th:text="${user.username}"></td>
+                        <td ><a style="color: red" th:text="delete" th:href="@{/job/admin/userdelete/{id}(id=${user.id})}"></a></td>
+                    </tr>
+                </th:block>
+                </tbody>
+            </table>
+            <a class="layui-btn" th:href="@{/job/user/logout}">logout</a>
+        </div>
+    </div>
+</div>
 </body>
+<!--/*/<th:block th:replace="fragments :: script">/*/-->
+<!--/*/</th:block>/*/-->
 </html>

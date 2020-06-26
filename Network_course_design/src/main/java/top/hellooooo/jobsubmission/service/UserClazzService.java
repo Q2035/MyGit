@@ -1,4 +1,4 @@
-package top.hellooooo.jobsubmission.service;
+package main.java.top.hellooooo.jobsubmission.service;
 
 import top.hellooooo.jobsubmission.pojo.Clazz;
 import top.hellooooo.jobsubmission.pojo.SubmitPerson;

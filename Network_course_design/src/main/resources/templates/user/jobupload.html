@@ -1,20 +1,69 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>JOBUPLOAD</title>
-    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<head th:replace="fragments::head(~{::title})">
+    <title>File Upload</title>
 </head>
-<body>
-<h1>JOB UPLOAD</h1>
-<h2 th:text="${job.jobDescription}"></h2>
-<h3 th:text="${job.deadline}"></h3>
-submited/all:<p th:text="|${job.submitCount}/${job.totalCount}|"></p>
-<form action="/job/user/fileupload" method="post" enctype="multipart/form-data">
-    <input type="file" name="file" id="myFile"/>
+
+<body style="background-color: #F2F2F2">
+<br />
+<div class="layui-container">
+
     <input type="hidden" id="jobId" th:value="${job.id}">
-    <input type="button" id="submitBtn" value="submit"/>
-</form>
+    <div class="layui-row">
+        <div class="layui-col-xs4 layui-col-sm7 layui-col-md8">
+            <div class="grid-demo layui-bg-green">|</div>
+            <br />
+            <blockquote class="layui-elem-quote">File upload</blockquote>
+            <div class="layui-upload-drag" id="test10">
+                <i class="layui-icon"></i>
+                <p>点击上传，或将文件拖拽到此处</p>
+                <div class="layui-hide" id="uploadDemoView">
+                    <hr>
+                    <img src="" alt="上传成功" style="max-width: 196px">
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <a th:href="@{/job/user/index}" class="layui-btn">index</a>
+</div>
+
+</body>
+
+<!--/*/<th:block th:replace="fragments :: script">/*/-->
+<!--/*/</th:block>/*/-->
+<script>
+
+    layui.use('form', function(){
+        var form = layui.form;
+        form.render();
+    });
+
+    layui.use('upload', function(){
+        var $ = layui.jquery
+            ,upload = layui.upload
+        //拖拽上传
+        upload.render({
+            elem: '#test10'
+            ,url: "/job/user/fileupload"
+            ,size: 10000
+            ,data: {
+                jobId : $('#jobId').val()
+            }
+            ,method: 'post'
+            ,accept: 'file'
+            ,done: function(res){
+                console.log(res)
+                layer.msg(res.message);
+                if (res.success){
+                    layui.$('#uploadDemoView').removeClass('layui-hide').attr('src', res.files.file);
+                }
+                console.log(res)
+            }
+        });
+    });
+
+</script>
 </body>
 <script>
     $('#submitBtn').click(function () {

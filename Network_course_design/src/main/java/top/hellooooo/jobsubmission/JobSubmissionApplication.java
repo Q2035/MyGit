@@ -1,4 +1,4 @@
-package top.hellooooo.jobsubmission;
+package main.java.top.hellooooo.jobsubmission;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;

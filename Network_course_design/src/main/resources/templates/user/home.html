@@ -1,27 +1,46 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>USER HOME</title>
+<head th:replace="fragments::head(~{::title})">
+    <title>User Home</title>
 </head>
-<body>
-<h1>USER HOME</h1>
-<h2 th:if="${#arrays.length(jobs)}!=0">Current tasks that need to be completed</h2>
-<p th:if="${#arrays.length(jobs)}==0">NO task!</p>
-<table border="1" th:if="${#arrays.length(jobs)}!=0">
-    <tr>
-        <td>count</td>
-        <td>job description</td>
-        <td>deadline</td>
-    </tr>
-    <th:block th:each="job,step:${jobs}">
-        <tr>
-            <td th:text="${step.count}"></td>
-            <td><a th:text="${job.jobDescription}" th:href="@{/job/user/fileupload/{id}(id=${job.id})}"></a></td>
-            <td th:text="${job.deadline}" style="color: red"></td>
-        </tr>
-    </th:block>
-</table>
-<a th:href="@{/job/user/logout}">logout</a>
+<body style="background-color: #F2F2F2">
+<br />
+<div class="layui-container">
+
+    <div class="layui-row">
+        <div class="layui-col-xs4 layui-col-sm7 layui-col-md8">
+            <div class="grid-demo layui-bg-green">|</div>
+            <br />
+            <blockquote class="layui-elem-quote">Hello. Here is the job info.</blockquote>
+            <table class="layui-table" th:if="${jobs} != null and ${#arrays.length(jobs)}!=0">
+                <colgroup>
+                    <col width="150">
+                    <col width="200">
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>count</th>
+                    <th>job description</th>
+                    <th>deadline</th>
+                </tr>
+                </thead>
+                <tbody>
+                <th:block th:each="job,step:${jobs}">
+                    <tr>
+                        <td th:text="${step.count}"></td>
+                        <td><a th:text="${job.jobDescription}" th:href="@{/job/user/fileupload/{id}(id=${job.id})}"></a></td>
+                        <td th:text="${job.deadline}" th:styleappend="${#dates.second(job.deadline)} - ${#dates.second(new java.util.Date())} < 86400 ? 'color: red'"></td>
+                    </tr>
+                </th:block>
+                </tbody>
+            </table>
+            <br />
+            <a th:href="@{/job/user/logout}" class="layui-btn">logout</a>
+        </div>
+    </div>
+</div>
 </body>
+<!--/*/<th:block th:replace="fragments :: script">/*/-->
+<!--/*/</th:block>/*/-->
 </html>

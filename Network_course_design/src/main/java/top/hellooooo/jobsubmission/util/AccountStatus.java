@@ -1,4 +1,4 @@
-package top.hellooooo.jobsubmission.util;
+package main.java.top.hellooooo.jobsubmission.util;
 
 public class AccountStatus {
     public static final Integer UNAUTHORIZED_ACCESS_TO = 1;

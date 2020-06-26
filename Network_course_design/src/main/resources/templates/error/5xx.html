@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments::head(~{::title})">
+    <title>Manager Index</title>
+</head>
+
+<body style="background-color: #F2F2F2">
+<br />
+<div class="layui-container">
+
+    <div class="layui-row">
+        <div class="layui-col-xs4 layui-col-sm7 layui-col-md8">
+            <div class="grid-demo layui-bg-green">|</div>
+            <br />
+            <blockquote class="layui-elem-quote">Error!</blockquote>
+
+            <a th:href="@{/job/user/index}" class="layui-btn">back to index</a>
+        </div>
+    </div>
+</div>
+</body>
+<!--/*/<th:block th:replace="fragments :: script">/*/-->
+<!--/*/</th:block>/*/-->
+</html>

@@ -1,9 +1,10 @@
-package top.hellooooo.jobsubmission.util;
+package main.java.top.hellooooo.jobsubmission.util;
 
 public class CommonResult<T> {
     private String message;
     private T data;
     private boolean success;
+    private String redirectURL;
 
     public boolean isSuccess() {
         return success;
@@ -33,9 +34,18 @@ public class CommonResult<T> {
     @Override
     public String toString() {
         return "CommonResult{" +
-                ", message='" + message + '\'' +
+                "message='" + message + '\'' +
                 ", data=" + data +
                 ", success=" + success +
+                ", redirectURL='" + redirectURL + '\'' +
                 '}';
+    }
+
+    public String getRedirectURL() {
+        return redirectURL;
+    }
+
+    public void setRedirectURL(String redirectURL) {
+        this.redirectURL = redirectURL;
     }
 }

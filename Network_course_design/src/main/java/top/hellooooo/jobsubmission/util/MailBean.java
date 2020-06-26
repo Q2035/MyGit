@@ -1,4 +1,4 @@
-package top.hellooooo.jobsubmission.util;
+package main.java.top.hellooooo.jobsubmission.util;
 
 import java.io.Serializable;
 

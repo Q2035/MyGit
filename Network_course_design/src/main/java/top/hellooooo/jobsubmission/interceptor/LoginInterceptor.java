@@ -1,4 +1,4 @@
-package top.hellooooo.jobsubmission.interceptor;
+package main.java.top.hellooooo.jobsubmission.interceptor;
 
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 

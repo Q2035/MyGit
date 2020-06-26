@@ -1,4 +1,4 @@
-package top.hellooooo.jobsubmission.controller;
+package main.java.top.hellooooo.jobsubmission.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

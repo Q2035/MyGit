@@ -1,4 +1,4 @@
-package top.hellooooo.jobsubmission.pojo;
+package main.java.top.hellooooo.jobsubmission.pojo;
 
 /**
  * 规定按$号开头的需要进行替换

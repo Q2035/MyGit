@@ -1,6 +1,7 @@
-package top.hellooooo.jobsubmission.pojo;
+package main.java.top.hellooooo.jobsubmission.pojo;
 
 import org.springframework.stereotype.Component;
+import top.hellooooo.jobsubmission.pojo.Clazz;
 import top.hellooooo.jobsubmission.util.AccountStatus;
 
 /**
