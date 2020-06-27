@@ -46,7 +46,8 @@
         upload.render({
             elem: '#test10'
             ,url: "/job/user/fileupload"
-            ,size: 10000
+            //限制大小
+            ,size: 100000
             ,data: {
                 jobId : $('#jobId').val()
             }

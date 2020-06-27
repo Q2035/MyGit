@@ -234,7 +234,7 @@ public class UserController {
         String suffix = Job.prefix + job.getId();
 //        例如：/basepath/JOB1/temp.txt
 //        这里需要加上班级
-        filePath = publicBasePath + suffix + File.separator + fileName;
+        filePath = publicBasePath + File.separator + suffix + File.separator + fileName;
         File dest = new File(filePath);
 //        查看是否存在目录
         if (!dest.getParentFile().exists()){
