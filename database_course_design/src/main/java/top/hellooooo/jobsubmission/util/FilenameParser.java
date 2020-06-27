@@ -29,6 +29,9 @@ public class FilenameParser {
                         case "classname":
                             stringBuffer.append(user.getClazz().getClazzName());
                             break;
+                        case "nickname":
+                            stringBuffer.append(user.getNickname());
+                            break;
                     }
 //                否则，直接接在后面即可
                 }else {
