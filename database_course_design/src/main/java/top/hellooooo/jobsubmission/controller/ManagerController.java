@@ -155,7 +155,7 @@ public class ManagerController {
     public CommonResult fileDownload(@PathVariable("jobId")Integer jobId,
                                HttpServletRequest request,
                                HttpServletResponse response){
-        String sourceFileName = basepath + Job.prefix + jobId;
+        String sourceFileName = basepath + File.separator + Job.prefix + jobId;
         File parentPath = new File(sourceFileName);
         if (!parentPath.exists()) {
             parentPath.mkdirs();
