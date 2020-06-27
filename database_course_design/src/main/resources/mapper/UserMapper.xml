@@ -75,6 +75,10 @@
         delete from j_user where id = #{id}
     </delete>
 
+    <update id="updateUserWithNickname">
+        update j_user set nickname = #{nickname} where username = #{username}
+    </update>
+
     <insert id="setUser" parameterType="User">
         insert into j_user(username, password) values (#{username},#{password})
     </insert>

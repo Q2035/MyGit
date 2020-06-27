@@ -96,6 +96,7 @@ public class UserController {
                 return redirectAddress;
             } else {
                 unexpiredJobs = jobService.getCurrentJobByUserId(user.getId());
+                model.addAttribute("user", user);
             }
 
             model.addAttribute("jobs", unexpiredJobs);

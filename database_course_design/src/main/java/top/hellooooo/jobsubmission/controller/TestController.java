@@ -9,12 +9,13 @@ import top.hellooooo.jobsubmission.mapper.UserMapper;
 import top.hellooooo.jobsubmission.pojo.User;
 import top.hellooooo.jobsubmission.service.UserService;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-//@Controller
+@Controller
 @ResponseBody
-//@RequestMapping("/test")
+@RequestMapping("/test")
 public class TestController {
 
     @Autowired
@@ -53,5 +54,29 @@ public class TestController {
             hi.add(user);
         }
         return hi;
+    }
+
+    @RequestMapping("/t4")
+    public List<User> t4(){
+        File file = new File("D:\\a.txt");
+        List<User> users = new ArrayList<>();
+        try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))){
+            String temp = reader.readLine();
+            while (temp != null) {
+                String[] split = temp.split("\t");
+                User userByUsername = userService.getUserByUsername(split[0]);
+                if (userByUsername == null) {
+                    continue;
+                }
+                userService.updateUserWithNickname(split[0],split[1]);
+                users.add(userByUsername);
+                temp = reader.readLine();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return users;
     }
 }

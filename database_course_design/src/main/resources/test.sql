@@ -40,7 +40,8 @@ create table j_job(
     start_time datetime,
     deadline datetime,
     submit_count int,
-    total_count int
+    total_count int,
+    submit_time datetime
 );
 
 create table j_submit_person(

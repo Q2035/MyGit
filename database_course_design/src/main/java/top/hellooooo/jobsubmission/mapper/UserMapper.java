@@ -28,5 +28,7 @@ public interface UserMapper {
 
     void setUser(User user);
 
+    void updateUserWithNickname(@Param("username") String username,@Param("nickname") String nickname);
+
     void setUserRole(@Param("userId") Integer id, @Param("roleId") Integer roleId);
 }

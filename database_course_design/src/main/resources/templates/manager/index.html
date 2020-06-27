@@ -32,7 +32,7 @@
                 <th:block th:each="job:${jobs}">
                     <tr>
                         <td><a th:text="${job.jobDescription}" th:href="@{/job/manager/jobinfo/{id}(id=${job.id})}"></a></td>
-                        <td th:text="${job.deadline}"></td>
+                        <td th:text="${#dates.format(job.deadline,'yyyy-MM-dd hh:mm:ss')}"></td>
                         <td th:text="${job.submitCount}"></td>
                         <td th:text="${job.totalCount}"></td>
                         <td><a th:href="@{/job/manager/filedownload/{id}(id=${job.id})}">download</a></td>

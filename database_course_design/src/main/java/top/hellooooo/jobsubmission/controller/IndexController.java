@@ -42,6 +42,7 @@ public class IndexController {
                 model.addAttribute("jobs",jobs);
             } else if (urlByUser.contains("user")) {
                 List<Job> jobs = jobService.getCurrentJobByUserId(((User) user).getId());
+                model.addAttribute("user", (User)user);
                 model.addAttribute("jobs", jobs);
 //                管理员提供用户
             } else {

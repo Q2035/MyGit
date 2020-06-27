@@ -24,5 +24,7 @@ public interface UserService {
 
     void setUserWithRole(User user, Integer roleId);
 
+    void updateUserWithNickname(String username,String nickname);
+
     void setClazz(Integer id, int clazzId);
 }

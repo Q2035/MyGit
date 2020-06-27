@@ -84,6 +84,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void updateUserWithNickname(String username, String nickname) {
+        userMapper.updateUserWithNickname(username,nickname);
+    }
+
+    @Override
     public void setClazz(Integer id, int clazzId) {
         userClazzMapper.setClazz(id,clazzId);
     }

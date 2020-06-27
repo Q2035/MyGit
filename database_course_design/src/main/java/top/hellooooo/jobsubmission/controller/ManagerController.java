@@ -111,7 +111,6 @@ public class ManagerController {
 //            从数据库获取选中班级的总人数
             List<Clazz> clazzById = userClazzService.getClazzById(clazz);
 //            这个不能为0，应该直接接用班级人数
-            job.setSubmitCount(0);
             job.setTotalCount(clazzById.stream().mapToInt(Clazz::getTotalCount).sum());
 //            将Job信息插入数据库
             jobService.jobAdd(job);

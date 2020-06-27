@@ -22,6 +22,7 @@
                 <tr>
                     <th>count</th>
                     <th>username</th>
+                    <th>nickname</th>
                     <th>clazzName</th>
                 </tr>
                 </thead>
@@ -30,6 +31,7 @@
                     <tr>
                         <td th:text="${step.count}"></td>
                         <td th:text="${user.username}"></td>
+                        <td th:text="${user.nickname}"></td>
                         <td th:text="${user.clazz.clazzName}"></td>
                     </tr>
                 </th:block>
