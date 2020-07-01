@@ -1,9 +1,9 @@
-package top.hellooooo.jobsubmission.service;
+package top.hellooooo.netjobsubmission.service;
 
-import top.hellooooo.jobsubmission.pojo.Filename;
-import top.hellooooo.jobsubmission.pojo.Job;
-import top.hellooooo.jobsubmission.pojo.SubmitPerson;
-import top.hellooooo.jobsubmission.pojo.User;
+import top.hellooooo.netjobsubmission.pojo.Filename;
+import top.hellooooo.netjobsubmission.pojo.Job;
+import top.hellooooo.netjobsubmission.pojo.SubmitPerson;
+import top.hellooooo.netjobsubmission.pojo.User;
 
 import java.util.List;
 

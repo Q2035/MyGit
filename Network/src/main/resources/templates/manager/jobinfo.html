@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments::head(~{::title})">
+    <title>Job Info</title>
+</head>
+<body style="background-color: #F2F2F2">
+<br />
+<div class="layui-container">
+
+    <div class="layui-row">
+        <div class="layui-col-xs4 layui-col-sm7 layui-col-md8">
+            <div class="grid-demo layui-bg-green">|</div>
+            <br />
+            <blockquote class="layui-elem-quote">Hello,Manager. Here is the job info.</blockquote>
+            <table class="layui-table" th:if="${unSubmitUsers != null}">
+                <colgroup>
+                    <col width="150">
+                    <col width="200">
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>count</th>
+                    <th>username</th>
+                    <th>nickname</th>
+                    <th>clazzName</th>
+                </tr>
+                </thead>
+                <tbody>
+                <th:block th:each="user,step:${unSubmitUsers}">
+                    <tr>
+                        <td th:text="${step.count}"></td>
+                        <td th:text="${user.username}"></td>
+                        <td th:text="${user.nickname}"></td>
+                        <td th:text="${user.clazz.clazzName}"></td>
+                    </tr>
+                </th:block>
+                </tbody>
+            </table>
+            <a  onclick="window.history.go(-1)" class="layui-btn">go back</a>
+        </div>
+    </div>
+</div>
+</body>
+<!--/*/<th:block th:replace="fragments :: script">/*/-->
+<!--/*/</th:block>/*/-->
+</html>

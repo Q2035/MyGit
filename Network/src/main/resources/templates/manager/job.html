@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments::head(~{::title})">
+    <title>About</title>
+</head>
+
+<body style="background-color: #F2F2F2">
+<br />
+<div class="layui-container">
+<!--username nickname classname-->
+    <div class="layui-row">
+        <div class="layui-col-xs4 layui-col-sm7 layui-col-md8">
+            <div class="grid-demo layui-bg-green">|</div>
+            <br />
+            <blockquote class="layui-elem-quote">Job Input</blockquote>
+            <form class="layui-form" th:action="@{/job/manager/jobadd}" method="post">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">job description:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="job_description" required lay-verify="required" placeholder="job_description" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">deadline:</label>
+                    <div class="layui-input-inline">
+                        <input type="datetime-local" name="deadline" required lay-verify="required" placeholder="deadline" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">eg:2020-03-17 12:20:00</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">partCount:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="partCount" required lay-verify="required" placeholder="partCount" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">Input a num.eg. 4</div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">separator:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="separat" placeholder="separator" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">The separator will be used to separate the filename.</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">part1:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="part1" required lay-verify="required" placeholder="part1" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">The first part of filename.</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">part2:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="part2"  placeholder="part2" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">part3:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="part3"  placeholder="part3" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">part4:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="part4"  placeholder="part4" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">part5:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="part5"  placeholder="part5" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">part6:</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="part6"  placeholder="part6" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Clazz:</label>
+                    <div class="layui-input-inline">
+                        <input type="checkbox" th:each="clazz: ${allclazz}" th:name="clazz" th:title="|${clazz.getClazzName()}:${clazz.getTotalCount()}人|" th:value="${clazz.getId()}">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">Choose the Clazz(with total count)</div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="formDemo">submit</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">reset</button>
+                        <button class="layui-btn layui-btn-primary" onclick="window.history.go(-1)">back</button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<!--/*/<th:block th:replace="fragments :: script">/*/-->
+<!--/*/</th:block>/*/-->
+
+<script>
+
+    layui.use('form', function(){
+        var form = layui.form;
+
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            console.log(data.field)
+            layer.msg("wait..")
+        });
+    });
+</script>
+</html>
