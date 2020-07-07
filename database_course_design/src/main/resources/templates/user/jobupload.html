@@ -23,7 +23,7 @@
                 </div>
                 <br />
     <!--            进度条-->
-                <div class="layui-progress layui-progress-big" lay-showpercent="true" lay-filter="upload">
+                <div class="layui-progress layui-progress-big" lay-showpercent="true" lay-filter="demo">
                     <div class="layui-progress-bar layui-bg-red" lay-percent="0%"></div>
                 </div>
             </div>
@@ -32,6 +32,12 @@
     <br />
     <button type="button" class="layui-btn" id="testListAction">click to submit</button>
     <a th:href="@{/job/user/index}" class="layui-btn">back to index</a>
+    <br />
+    <br />
+    <br />
+    <p>info:由于带宽只有1Mbps，也就是100多k，开始上传后请耐心等待，不要点击返回或关闭页面。</p>
+    <br />
+    <p>上传完成会有提示出现。</p>
 </div>
 
 </body>
@@ -44,12 +50,7 @@
         form.render();
     });
 
-    layui.use('element', function(){
-        var element = layui.element;
-
-    });
-
-    layui.use('upload', function(){
+    layui.use(['upload','jquery','element'], function(){
         var $ = layui.jquery
             ,upload = layui.upload
             ,element = layui.element;
@@ -68,20 +69,19 @@
             ,method: 'post'
             //接收任何类型的文件
             ,accept: 'file'
-            ,progress: function(n, elem){
-                var percent = n + '%' //获取进度百分比
-                console.log(percent)
-                element.progress('upload', percent); //可配合 layui 进度条元素使用
-            }
             //完成回调
             ,done: function(res){
                 layer.msg(res.message);
                 if (res.success){
-                    layui.$('#uploadDemoView').removeClass('layui-hide').attr('src', res.files.file);
+                    layui.$('#uploadDemoView').removeClass('layui-hide').attr('src');
                 }
+                element.progress('demo','100%')
+            },
+            progress: function (n, element) {
+                var percent = n + '%';
+                element.progress('demo',percent)
             }
         });
-        alert("HI")
     });
 
 </script>

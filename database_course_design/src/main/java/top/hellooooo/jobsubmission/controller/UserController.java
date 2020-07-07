@@ -21,8 +21,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 
 @RequestMapping("job/user")
@@ -236,7 +235,7 @@ public class UserController {
         CommonResult result = new CommonResult();
         if (job == null) {
             logger.warn("user {} wants to upload file but is rejected! ",user.getUsername());
-            logger.warn("file {}",file.getOriginalFilename());
+            logger.warn("file {}",file.getName());
             result.setMessage("ERROR! NO PERMISSION!");
             return result;
         }
@@ -244,8 +243,7 @@ public class UserController {
             logger.warn("{} upload an empty file.",request.getRemoteAddr());
         }
         String fileName = file.getOriginalFilename();
-        String contentType = file.getContentType();
-        logger.info("{} upload name:{} type:{}",user.getUsername(),fileName, contentType);
+        logger.info("{} upload name:{}",user.getUsername(),fileName);
         String[] split = fileName.split("\\.");
 //        从数据库中取出Filename对象
         Filename filenameByJobId = jobService.getFilenameByJobId(jobId);
