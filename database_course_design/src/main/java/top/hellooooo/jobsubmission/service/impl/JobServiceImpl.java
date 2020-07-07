@@ -14,8 +14,11 @@ import java.util.List;
 @Service
 public class JobServiceImpl implements JobService {
 
-    @Autowired
-    private JobMapper jobMapper;
+    private final JobMapper jobMapper;
+
+    public JobServiceImpl(JobMapper jobMapper) {
+        this.jobMapper = jobMapper;
+    }
 
     @Override
     public void jobAdd(Job job) {
@@ -71,5 +74,10 @@ public class JobServiceImpl implements JobService {
     @Override
     public Filename getFilenameByJobId(Integer jobId) {
         return jobMapper.getFilenameByJobId(jobId);
+    }
+
+    @Override
+    public List<Job> getAllExpiredJobs() {
+        return jobMapper.getAllExpiredJobs();
     }
 }

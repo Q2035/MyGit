@@ -29,4 +29,6 @@ public interface JobService {
     void setFilename(Filename filename);
 
     Filename getFilenameByJobId(Integer jobId);
+
+    List<Job> getAllExpiredJobs();
 }

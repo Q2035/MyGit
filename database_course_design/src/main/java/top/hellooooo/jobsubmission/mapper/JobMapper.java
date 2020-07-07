@@ -46,4 +46,10 @@ public interface JobMapper {
     Filename getFilenameByJobId(Integer jobId);
 
     void dropSubmitPersonByUserId(Integer id);
+
+    /**
+     * 丛数据库返回所有已经截止的作业
+     * @return
+     */
+    List<Job> getAllExpiredJobs();
 }

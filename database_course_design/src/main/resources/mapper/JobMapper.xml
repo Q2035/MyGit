@@ -75,4 +75,9 @@
     <delete id="dropSubmitPersonByUserId" parameterType="int">
         delete from j_submit_person where user_id = #{id}
     </delete>
+
+<!--    获取所有已经截止的作业-->
+    <select id="getAllExpiredJobs" resultType="Job">
+        select * from j_job where unix_timestamp(deadline) &lt; unix_timestamp(now())
+    </select>
 </mapper>

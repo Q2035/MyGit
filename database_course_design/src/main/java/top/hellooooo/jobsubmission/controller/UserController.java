@@ -86,9 +86,11 @@ public class UserController {
 //        将用户信息存入Session
             session.setAttribute("user",user);
 //            如果登录者为管理员，则将所有未过期Job信息传回前端
-            List<Job> unexpiredJobs = null;
+            List<Job> unexpiredJobs;
             if (user.getRole().getRoleName().contains(Role.MANAGER)) {
                  unexpiredJobs = jobService.getUnexpiredJobs();
+                List<Job> allJobs = jobService.getAllExpiredJobs();
+                model.addAttribute("allJobs", allJobs);
 //                 管理员直接跳转到管理员界面
             } else if (user.getRole().getRoleName().contains(Role.ADMIN)) {
                 List<User> users = userService.getAllUsers();

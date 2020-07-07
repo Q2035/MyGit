@@ -54,8 +54,11 @@ public class ManagerController {
 
     @GetMapping({"/index","/"})
     public String index(Model model){
+//        一方面加上当前未过期的作业，另一方面加上所有历史作业
         List<Job> unexpiredJobs = jobService.getUnexpiredJobs();
+        List<Job> allJobs = jobService.getAllExpiredJobs();
         model.addAttribute("jobs", unexpiredJobs);
+        model.addAttribute("allJobs", allJobs);
         return "manager/index";
     }
 

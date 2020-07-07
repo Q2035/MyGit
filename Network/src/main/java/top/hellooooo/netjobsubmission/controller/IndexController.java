@@ -21,12 +21,12 @@ public class IndexController {
 
     private final JobService jobService;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    public IndexController(IndexUtil indexUtil, JobService jobService) {
+    public IndexController(IndexUtil indexUtil, JobService jobService, UserService userService) {
         this.indexUtil = indexUtil;
         this.jobService = jobService;
+        this.userService = userService;
     }
 
     @RequestMapping({"/","/user/index","/user/","/user/login"})
