@@ -23,7 +23,7 @@
                 </div>
                 <br />
     <!--            进度条-->
-                <div class="layui-progress layui-progress-big" lay-showpercent="true" lay-filter="demo">
+                <div class="layui-progress layui-progress-big" lay-showpercent="true" lay-filter="upload">
                     <div class="layui-progress-bar layui-bg-red" lay-percent="0%"></div>
                 </div>
             </div>
@@ -39,15 +39,17 @@
 <!--/*/<th:block th:replace="fragments :: script">/*/-->
 <!--/*/</th:block>/*/-->
 <script>
-
-
-
     layui.use('form', function(){
         var form = layui.form;
         form.render();
     });
 
-    layui.use(['upload','element'], function(){
+    layui.use('element', function(){
+        var element = layui.element;
+
+    });
+
+    layui.use('upload', function(){
         var $ = layui.jquery
             ,upload = layui.upload
             ,element = layui.element;
@@ -64,19 +66,22 @@
                 jobId : $('#jobId').val()
             }
             ,method: 'post'
+            //接收任何类型的文件
             ,accept: 'file'
+            ,progress: function(n, elem){
+                var percent = n + '%' //获取进度百分比
+                console.log(percent)
+                element.progress('upload', percent); //可配合 layui 进度条元素使用
+            }
+            //完成回调
             ,done: function(res){
                 layer.msg(res.message);
                 if (res.success){
                     layui.$('#uploadDemoView').removeClass('layui-hide').attr('src', res.files.file);
                 }
             }
-            ,progress: function(n){
-                var percent = n + '%' //获取进度百分比
-                console.log(percent)
-                element.progress('demo', percent); //可配合 layui 进度条元素使用
-            }
         });
+        alert("HI")
     });
 
 </script>

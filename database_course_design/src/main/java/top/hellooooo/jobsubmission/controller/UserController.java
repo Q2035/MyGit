@@ -99,8 +99,8 @@ public class UserController {
                 return redirectAddress;
             } else {
 //                unexpiredJobs = jobService.getCurrentJobByUserId(user.getId());
-                unexpiredJobs = jobService.getUnexpiredJobsByUserId(user.getId());
-                List<SubmitPerson>  allJobs = userService.getAllSubmitInfoByUserId(user.getId());
+                unexpiredJobs = userService.getAllUnExpireJobByUserId(user.getId());
+                List<SubmitPerson> allJobs = userService.getAllExpiredJobSubmitInfoByUserId(user.getId());
 
                 model.addAttribute("user", user);
                 model.addAttribute("allJobs", allJobs);
@@ -214,6 +214,8 @@ public class UserController {
         model.addAttribute("job", job);
         return "user/jobupload";
     }
+
+
 
 
     /**

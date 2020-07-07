@@ -6,6 +6,7 @@ import top.hellooooo.jobsubmission.mapper.BlackListMapper;
 import top.hellooooo.jobsubmission.mapper.JobMapper;
 import top.hellooooo.jobsubmission.mapper.UserClazzMapper;
 import top.hellooooo.jobsubmission.mapper.UserMapper;
+import top.hellooooo.jobsubmission.pojo.Job;
 import top.hellooooo.jobsubmission.pojo.SubmitPerson;
 import top.hellooooo.jobsubmission.pojo.User;
 import top.hellooooo.jobsubmission.service.UserService;
@@ -96,7 +97,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<SubmitPerson> getAllSubmitInfoByUserId(Integer id) {
+    public List<SubmitPerson> getAllExpiredJobSubmitInfoByUserId(Integer id) {
         List<SubmitPerson> resJobs = new ArrayList<>();
         List<SubmitPerson> allJobs = userMapper.getAllSubmitInfoByUserId(id);
         long currentTime = System.currentTimeMillis();
@@ -106,6 +107,24 @@ public class UserServiceImpl implements UserService {
             }
         });
         return resJobs;
+    }
+
+    @Override
+    public List<Job> getAllUnExpireJobByUserId(Integer id) {
+        List<Job> resJob = new ArrayList<>();
+        List<SubmitPerson> allSubmitInfoByUserId = userMapper.getAllSubmitInfoByUserId(id);
+        Long currentTime = System.currentTimeMillis();
+        allSubmitInfoByUserId.forEach(submitPerson -> {
+            if (submitPerson.getSubmitTime() == null) {
+                submitPerson.getJob().setIfSubmit(false);
+            } else {
+                submitPerson.getJob().setIfSubmit(true);
+            }
+            if (submitPerson.getJob().getDeadline().getTime() > currentTime) {
+                resJob.add(submitPerson.getJob());
+            }
+        });
+        return resJob;
     }
 
     @Override

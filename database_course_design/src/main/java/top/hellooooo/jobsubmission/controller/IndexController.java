@@ -46,7 +46,7 @@ public class IndexController {
 //                用户经常会出现同一份作业再次提交的需求
 //                List<Job> jobs = jobService.getCurrentJobByUserId(((User) user).getId());
                 List<Job> jobs = jobService.getUnexpiredJobsByUserId(((User) user).getId());
-                List<SubmitPerson>  allJobs = userService.getAllSubmitInfoByUserId(((User) user).getId());
+                List<SubmitPerson>  allJobs = userService.getAllExpiredJobSubmitInfoByUserId(((User) user).getId());
                 model.addAttribute("user", (User)user);
                 model.addAttribute("jobs", jobs);
                 model.addAttribute("allJobs", allJobs);

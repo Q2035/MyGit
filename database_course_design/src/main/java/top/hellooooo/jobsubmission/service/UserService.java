@@ -1,6 +1,7 @@
 package top.hellooooo.jobsubmission.service;
 
 import org.apache.ibatis.annotations.Param;
+import top.hellooooo.jobsubmission.pojo.Job;
 import top.hellooooo.jobsubmission.pojo.SubmitPerson;
 import top.hellooooo.jobsubmission.pojo.User;
 
@@ -25,11 +26,19 @@ public interface UserService {
 
     void setUserWithRole(User user, Integer roleId);
 
-    void updateUserWithNickname(String username,String nickname);
+    void updateUserWithNickname(String username, String nickname);
 
     void setClazz(Integer id, int clazzId);
 
-    List<SubmitPerson> getAllSubmitInfoByUserId(Integer id);
+    /**
+     * 获取所有已经过期的作业
+     *
+     * @param id
+     * @return
+     */
+    List<SubmitPerson> getAllExpiredJobSubmitInfoByUserId(Integer id);
+
+    List<Job> getAllUnExpireJobByUserId(Integer id);
 
     SubmitPerson getSubmitPersonByJobIdAndUserId(Integer jobId, Integer userId);
 }

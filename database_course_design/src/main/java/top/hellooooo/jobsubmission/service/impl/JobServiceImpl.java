@@ -9,6 +9,7 @@ import top.hellooooo.jobsubmission.pojo.SubmitPerson;
 import top.hellooooo.jobsubmission.pojo.User;
 import top.hellooooo.jobsubmission.service.JobService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -83,6 +84,12 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public List<Job> getUnexpiredJobsByUserId(Integer id) {
-        return jobMapper.getUnexpiredJobsByUserId(id);
+        List<Job> unexpiredJobsByUserId = jobMapper.getUnexpiredJobsByUserId(id);
+        List<Integer> jobIds = new ArrayList<>();
+        unexpiredJobsByUserId.stream().forEach(job -> {
+            jobIds.add(job.getId());
+        });
+
+        return unexpiredJobsByUserId;
     }
 }

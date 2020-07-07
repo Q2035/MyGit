@@ -32,7 +32,7 @@
                         <td th:text="${step.count}"></td>
                         <td><a th:text="${job.jobDescription}" th:href="@{/job/user/fileupload/{id}(id=${job.id})}"></a></td>
                         <td th:text="${#dates.format(job.deadline,'yyyy-MM-dd HH:mm:ss')}" th:styleappend="${#dates.second(job.deadline)} - ${#dates.second(new java.util.Date())} < 86400 ? 'color: red'"></td>
-                        <td><i class="layui-icon layui-icon-ok" style="font-size: 30px; color: #1E9FFF;"></i></td>
+                        <td><i th:if="${job.ifSubmit}" class="layui-icon layui-icon-ok"></i></td>
                     </tr>
                 </th:block>
                 </tbody>
@@ -51,7 +51,7 @@
                     <th>count</th>
                     <th>job description</th>
                     <th>deadline</th>
-                    <th>finish</th>
+                    <th>submit time</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -61,8 +61,9 @@
                         <td th:text="${step.count}"></td>
 <!--                        不让点-->
                         <td th:text="${person.job.jobDescription}"></td>
-                        <td th:text="${#dates.format(person.job.deadline,'yyyy-MM-dd HH:mm:ss')}" th:styleappend="${#dates.second(person.job.deadline)} - ${#dates.second(new java.util.Date())} < 86400 ? 'color: red'"></td>
-                        <td><i class="layui-icon layui-icon-ok" style="font-size: 30px; color: #1E9FFF;"></i></td>
+                        <td th:text="${#dates.format(person.job.deadline,'yyyy-MM-dd HH:mm:ss')}"></td>
+<!--                        <td th:if="${person.submitTime != null }" ><i style="font-size: 30px; color: #1E9FFF;"></i></td>-->
+                        <td th:text="${#dates.format(person.submitTime,'yyyy-MM-dd HH:mm:ss')}" ></td>
                     </tr>
                 </th:block>
                 </tbody>

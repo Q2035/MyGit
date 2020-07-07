@@ -37,4 +37,6 @@ public interface UserMapper {
     List<SubmitPerson> getAllSubmitInfoByUserId(Integer id);
 
     SubmitPerson getSubmitPersonByJobIdAndUserId(@Param("jobId") Integer jobId, @Param("userId") Integer userId);
+
+
 }

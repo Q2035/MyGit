@@ -16,8 +16,27 @@ public class Job {
 
     public static String prefix = "JOB";
 
+//    为home界面是否提交做准备
+    private transient boolean ifSubmit;
+
 //    作业发布时间
     private Date submitTime;
+
+    public static String getPrefix() {
+        return prefix;
+    }
+
+    public static void setPrefix(String prefix) {
+        Job.prefix = prefix;
+    }
+
+    public boolean isIfSubmit() {
+        return ifSubmit;
+    }
+
+    public void setIfSubmit(boolean ifSubmit) {
+        this.ifSubmit = ifSubmit;
+    }
 
     public Date getSubmitTime() {
         return submitTime;
