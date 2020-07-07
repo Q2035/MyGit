@@ -12,7 +12,7 @@
         <div class="layui-col-xs4 layui-col-sm7 layui-col-md8">
             <div class="grid-demo layui-bg-green">|</div>
             <br />
-            <blockquote class="layui-elem-quote">Error!</blockquote>
+            <blockquote class="layui-elem-quote" th:text="|Error! ${msg}|">Error!</blockquote>
 
             <a th:href="@{/job/user/index}" class="layui-btn">back to index</a>
         </div>

@@ -80,4 +80,9 @@ public class JobServiceImpl implements JobService {
     public List<Job> getAllExpiredJobs() {
         return jobMapper.getAllExpiredJobs();
     }
+
+    @Override
+    public List<Job> getUnexpiredJobsByUserId(Integer id) {
+        return jobMapper.getUnexpiredJobsByUserId(id);
+    }
 }

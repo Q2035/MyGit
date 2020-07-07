@@ -6,9 +6,11 @@ import top.hellooooo.jobsubmission.mapper.BlackListMapper;
 import top.hellooooo.jobsubmission.mapper.JobMapper;
 import top.hellooooo.jobsubmission.mapper.UserClazzMapper;
 import top.hellooooo.jobsubmission.mapper.UserMapper;
+import top.hellooooo.jobsubmission.pojo.SubmitPerson;
 import top.hellooooo.jobsubmission.pojo.User;
 import top.hellooooo.jobsubmission.service.UserService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -91,5 +93,23 @@ public class UserServiceImpl implements UserService {
     @Override
     public void setClazz(Integer id, int clazzId) {
         userClazzMapper.setClazz(id,clazzId);
+    }
+
+    @Override
+    public List<SubmitPerson> getAllSubmitInfoByUserId(Integer id) {
+        List<SubmitPerson> resJobs = new ArrayList<>();
+        List<SubmitPerson> allJobs = userMapper.getAllSubmitInfoByUserId(id);
+        long currentTime = System.currentTimeMillis();
+        allJobs.stream().forEach(submitPerson -> {
+            if (submitPerson.getJob().getDeadline().getTime() < currentTime) {
+                resJobs.add(submitPerson);
+            }
+        });
+        return resJobs;
+    }
+
+    @Override
+    public SubmitPerson getSubmitPersonByJobIdAndUserId(Integer jobId, Integer userId) {
+        return userMapper.getSubmitPersonByJobIdAndUserId(jobId,userId);
     }
 }

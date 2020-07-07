@@ -80,4 +80,14 @@
     <select id="getAllExpiredJobs" resultType="Job">
         select * from j_job where unix_timestamp(deadline) &lt; unix_timestamp(now())
     </select>
+
+<!--    通过用户ID返回未过期的作业-->
+    <select id="getUnexpiredJobsByUserId" resultType="Job" parameterType="int">
+        select job.*
+        from j_job job join j_submit_person jsp on job.id = jsp.job_id
+#         保证当前任务是对指定用户开放的
+        and jsp.user_id = #{id}
+#         保证任务是未过期的
+        and unix_timestamp(job.deadline) > unix_timestamp(now());
+    </select>
 </mapper>

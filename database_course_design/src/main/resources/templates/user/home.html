@@ -23,6 +23,7 @@
                     <th>count</th>
                     <th>job description</th>
                     <th>deadline</th>
+                    <th>finish</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -31,6 +32,37 @@
                         <td th:text="${step.count}"></td>
                         <td><a th:text="${job.jobDescription}" th:href="@{/job/user/fileupload/{id}(id=${job.id})}"></a></td>
                         <td th:text="${#dates.format(job.deadline,'yyyy-MM-dd HH:mm:ss')}" th:styleappend="${#dates.second(job.deadline)} - ${#dates.second(new java.util.Date())} < 86400 ? 'color: red'"></td>
+                        <td><i class="layui-icon layui-icon-ok" style="font-size: 30px; color: #1E9FFF;"></i></td>
+                    </tr>
+                </th:block>
+                </tbody>
+            </table>
+
+
+            <blockquote class="layui-elem-quote" th:text="|Here is the overdue job info.|"></blockquote>
+            <table class="layui-table" th:if="${allJobs} != null and ${#arrays.length(allJobs)}!=0">
+                <colgroup>
+                    <col width="150">
+                    <col width="200">
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>count</th>
+                    <th>job description</th>
+                    <th>deadline</th>
+                    <th>finish</th>
+                </tr>
+                </thead>
+                <tbody>
+<!--                这里传入的是SubmitPerson-->
+                <th:block th:each="person,step:${allJobs}">
+                    <tr>
+                        <td th:text="${step.count}"></td>
+<!--                        不让点-->
+                        <td th:text="${person.job.jobDescription}"></td>
+                        <td th:text="${#dates.format(person.job.deadline,'yyyy-MM-dd HH:mm:ss')}" th:styleappend="${#dates.second(person.job.deadline)} - ${#dates.second(new java.util.Date())} < 86400 ? 'color: red'"></td>
+                        <td><i class="layui-icon layui-icon-ok" style="font-size: 30px; color: #1E9FFF;"></i></td>
                     </tr>
                 </th:block>
                 </tbody>

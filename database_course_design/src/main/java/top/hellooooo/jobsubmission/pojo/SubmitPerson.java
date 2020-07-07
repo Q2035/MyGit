@@ -8,6 +8,16 @@ public class SubmitPerson {
     private Integer jobId;
     private Date submitTime;
 
+    private Job job;
+
+    public Job getJob() {
+        return job;
+    }
+
+    public void setJob(Job job) {
+        this.job = job;
+    }
+
     public Integer getId() {
         return id;
     }

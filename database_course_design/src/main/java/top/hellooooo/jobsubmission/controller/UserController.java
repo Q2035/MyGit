@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import top.hellooooo.jobsubmission.exception.NoPermissionException;
 import top.hellooooo.jobsubmission.pojo.*;
 import top.hellooooo.jobsubmission.service.BlackListService;
 import top.hellooooo.jobsubmission.service.JobService;
@@ -97,8 +98,12 @@ public class UserController {
                 model.addAttribute("users",users);
                 return redirectAddress;
             } else {
-                unexpiredJobs = jobService.getCurrentJobByUserId(user.getId());
+//                unexpiredJobs = jobService.getCurrentJobByUserId(user.getId());
+                unexpiredJobs = jobService.getUnexpiredJobsByUserId(user.getId());
+                List<SubmitPerson>  allJobs = userService.getAllSubmitInfoByUserId(user.getId());
+
                 model.addAttribute("user", user);
+                model.addAttribute("allJobs", allJobs);
             }
 
             model.addAttribute("jobs", unexpiredJobs);
@@ -190,8 +195,22 @@ public class UserController {
 
     @GetMapping("/fileupload/{id}")
     public String upload(@PathVariable("id")Integer id,
-                         Model model){
+                         Model model,
+                         HttpServletRequest request){
+        HttpSession session = request.getSession();
         Job job = jobService.getJobByJobId(id);
+        User user = (User) session.getAttribute("user");
+        SubmitPerson submitPersonByJobIdAndUserId = userService.getSubmitPersonByJobIdAndUserId(id, user.getId());
+        if (submitPersonByJobIdAndUserId == null) {
+            String msg = "No permission!";
+            model.addAttribute("msg", msg);
+        } else {
+            if (submitPersonByJobIdAndUserId.getJob().getDeadline().getTime() < System.currentTimeMillis()) {
+                String msg = "Sorry, It's overdue: " + submitPersonByJobIdAndUserId.getJob().getDeadline();
+                model.addAttribute("msg", msg);
+                return "error/5xx";
+            }
+        }
         model.addAttribute("job", job);
         return "user/jobupload";
     }

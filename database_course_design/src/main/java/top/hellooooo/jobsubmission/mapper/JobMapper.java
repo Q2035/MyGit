@@ -52,4 +52,11 @@ public interface JobMapper {
      * @return
      */
     List<Job> getAllExpiredJobs();
+
+    /**
+     * 通过指定的用户ID返回未过期的作业
+     * @param id
+     * @return
+     */
+    List<Job> getUnexpiredJobsByUserId(Integer id);
 }

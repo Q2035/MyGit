@@ -31,4 +31,6 @@ public interface JobService {
     Filename getFilenameByJobId(Integer jobId);
 
     List<Job> getAllExpiredJobs();
+
+    List<Job> getUnexpiredJobsByUserId(Integer id);
 }

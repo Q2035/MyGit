@@ -86,4 +86,22 @@
     <insert id="setUserRole">
         insert into j_user_role(user_id, role_id) values (#{userId},#{roleId})
     </insert>
+
+    <select id="getAllSubmitInfoByUserId" parameterType="int" resultMap="submitPersonWithJob">
+        select * from j_submit_person where user_id = #{id}
+#         注意，这里需要的是已经超过截止时间的，所以需要更改getJobByJobId
+    </select>
+
+    <select id="getJobByJobId" parameterType="int" resultType="Job">
+        select * from j_job where id = #{id}
+    </select>
+
+    <resultMap id="submitPersonWithJob" type="SubmitPerson">
+        <id column="id" property="id"/>
+        <association property="job" column="job_id" select="getJobByJobId"/>
+    </resultMap>
+
+    <select id="getSubmitPersonByJobIdAndUserId" resultMap="submitPersonWithJob">
+        select * from j_submit_person where user_id = #{userId} and job_id = #{jobId} limit 1
+    </select>
 </mapper>

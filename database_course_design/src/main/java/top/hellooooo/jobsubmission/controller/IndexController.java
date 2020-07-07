@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import top.hellooooo.jobsubmission.pojo.Job;
 import top.hellooooo.jobsubmission.pojo.Role;
+import top.hellooooo.jobsubmission.pojo.SubmitPerson;
 import top.hellooooo.jobsubmission.pojo.User;
 import top.hellooooo.jobsubmission.service.JobService;
 import top.hellooooo.jobsubmission.service.UserService;
@@ -43,10 +44,12 @@ public class IndexController {
             } else if (urlByUser.contains("user")) {
 //                这个方法返回当前用户所有未提交并未截止的方法，但是实际使用过程中发现
 //                用户经常会出现同一份作业再次提交的需求
-                List<Job> jobs = jobService.getCurrentJobByUserId(((User) user).getId());
-                jobService.getUnexpiredJobs();
+//                List<Job> jobs = jobService.getCurrentJobByUserId(((User) user).getId());
+                List<Job> jobs = jobService.getUnexpiredJobsByUserId(((User) user).getId());
+                List<SubmitPerson>  allJobs = userService.getAllSubmitInfoByUserId(((User) user).getId());
                 model.addAttribute("user", (User)user);
                 model.addAttribute("jobs", jobs);
+                model.addAttribute("allJobs", allJobs);
 //                管理员提供用户
             } else {
                 model.addAttribute("users", userService.getAllUsers());
