@@ -1,0 +1,1 @@
+QRCodeApplication可以生成二维码
