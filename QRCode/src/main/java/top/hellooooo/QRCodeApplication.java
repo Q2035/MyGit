@@ -1,13 +1,21 @@
 package top.hellooooo;
 
+import com.google.zxing.ChecksumException;
+import com.google.zxing.FormatException;
+import com.google.zxing.NotFoundException;
 import com.google.zxing.WriterException;
+import top.hellooooo.qrcode.wrapper.QrCodeDeWrapper;
 import top.hellooooo.qrcode.wrapper.QrCodeGenWrapper;
 import top.hellooooo.qrcode.wrapper.QrCodeOptions;
 
 import java.io.IOException;
 
 public class QRCodeApplication {
-    public static void main(String[] args) throws IOException, WriterException {
+    public static void main(String[] args) throws IOException, ChecksumException, NotFoundException, FormatException {
+        System.out.println(getInfoFromQRcode("/tmp/bqr3.png"));
+    }
+
+    public static void createQR() throws IOException, WriterException {
         String msg = "https://hellooooo.top";
 //        QrCodeGenWrapper.of(msg).asFile("/tmp/qr.png");
         // 背景渲染方式，用背景图来填充二维码，对应下图中的右图
@@ -19,5 +27,10 @@ public class QRCodeApplication {
                 .setBgH(500)
                 .setW(500)
                 .asFile("/tmp/bqr3.png");
+    }
+
+    public static String getInfoFromQRcode(String img) throws FormatException, ChecksumException, NotFoundException, IOException {
+        String ans = QrCodeDeWrapper.decode(img);
+        return ans;
     }
 }
