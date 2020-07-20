@@ -1,0 +1,3 @@
+include ':Baselibrary'
+include ':app'
+rootProject.name = "EssayJoke"
