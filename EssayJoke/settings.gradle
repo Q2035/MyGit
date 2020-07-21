@@ -1,3 +1,4 @@
 include ':Baselibrary'
+include ':FrameLibrary'
 include ':app'
 rootProject.name = "EssayJoke"
