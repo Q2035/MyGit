@@ -6,8 +6,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.example.baselibrary.ExceptionCrashHandler;
+import com.example.baselibrary.fixBug.FixDexManager;
 import com.example.baselibrary.ioc.OnClick;
 import com.example.baselibrary.ioc.ViewById;
 import com.example.baselibrary.ioc.ViewUtils;
@@ -55,7 +57,27 @@ public class MainActivity extends BaseSkinActivity {
      */
     @Override
     protected void initData(){
-//        获取前次的奔溃信息上传
+//        bugInfoUpload();
+//        aliFixBug();
+        fixDexBug();
+    }
+
+    private void fixDexBug() {
+        File fixFile = new File(Environment.getExternalStorageDirectory(), "fix.dex");
+        if (fixFile.exists()) {
+            FixDexManager fixDexManager = new FixDexManager(this);
+            try {
+                fixDexManager.fixDex(fixFile.getAbsolutePath());
+                Toast.makeText(this, "SUCCESS", Toast.LENGTH_LONG).show();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "FAIL", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private void bugInfoUpload() {
+        //        获取前次的奔溃信息上传
 //        File crashFile = ExceptionCrashHandler.getInstance().getCrashFile();
 //        if (crashFile.exists()) {
 ////            上传服务器
@@ -73,7 +95,10 @@ public class MainActivity extends BaseSkinActivity {
 //                e.printStackTrace();
 //            }
 //        }
-//        热启动
+    }
+
+    private void aliFixBug() {
+        //        热启动
 //        测试，直接获取本地内存卡中的fix.apatch
         File fixFile = new File(Environment.getExternalStorageDirectory(), "fix.apatch");
         if (fixFile.exists()) {
