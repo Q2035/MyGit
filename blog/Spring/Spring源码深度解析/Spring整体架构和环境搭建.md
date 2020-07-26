@@ -646,5 +646,356 @@ public void registerBeanDefinitions(Document doc, XmlReaderContext readerContext
 
 而两种方式的读取及解析差别是非常大的，如果采用Spring默认的配置，Spring当然知道该怎么做，但是如果是自定义的，那么就需要用户实现一些接口及配置了。对于根节点或者子节点如果是默认命名空间的话则采用parseDefaultElement方法进行解析，否则使用delegate.parseCustomElement方法对自定义命名空间进行解析。而判断是否默认命名空间还是自定义命名空间的办法其实是使用node.getNamespaceURI()获取命名空间，并与Spring中固定的命名空间http://www.springframework.org/schema/beans进行比对。如果一致则认为是默认，否则就认为是自定义。
 
+## 默认标签的解析
 
+默认标签的解析是在parseDefaultElement函数中进行的，函数中的功能逻辑一目了然，分别对4种不同标签（import、alias、bean和beans）做了不同的处理。
+
+```java
+	private void parseDefaultElement(Element ele, BeanDefinitionParserDelegate delegate) {
+//		对import标签的处理
+		if (delegate.nodeNameEquals(ele, IMPORT_ELEMENT)) {
+			importBeanDefinitionResource(ele);
+		}
+//		对alias标签的处理
+		else if (delegate.nodeNameEquals(ele, ALIAS_ELEMENT)) {
+			processAliasRegistration(ele);
+		}
+//		对bean标签的处理
+		else if (delegate.nodeNameEquals(ele, BEAN_ELEMENT)) {
+			processBeanDefinition(ele, delegate);
+		}
+//		对beans标签的处理
+		else if (delegate.nodeNameEquals(ele, NESTED_BEANS_ELEMENT)) {
+			// recurse
+			doRegisterBeanDefinitions(ele);
+		}
+	}
+```
+
+### bean标签的解析及注册
+
+在4种标签的解析中，对bean标签的解析最为复杂也最为重要。首先我们进入函数processBeanDefinition(ele, delegate)。
+
+```java
+protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate) {
+   BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
+   if (bdHolder != null) {
+      bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);
+      try {
+         // Register the final decorated instance.
+         BeanDefinitionReaderUtils.registerBeanDefinition(bdHolder, getReaderContext().getRegistry());
+      }
+      catch (BeanDefinitionStoreException ex) {
+         getReaderContext().error("Failed to register bean definition with name '" +
+               bdHolder.getBeanName() + "'", ele, ex);
+      }
+      // Send registration event.
+      getReaderContext().fireComponentRegistered(new BeanComponentDefinition(bdHolder));
+   }
+}
+```
+
+大致的逻辑总结如下。
+
+1．首先委托BeanDefinitionDelegate类的parseBeanDefinitionElement方法进行元素解析，返回BeanDefinitionHolder类型的实例bdHolder，经过这个方法后，bdHolder实例已经包含我们配置文件中配置的各种属性了，例如class、name、id、alias之类的属性。
+
+2．当返回的bdHolder不为空的情况下若存在默认标签的子节点下再有自定义属性，还需要再次对自定义标签进行解析。
+
+3．解析完成后，需要对解析后的bdHolder进行注册，同样，注册操作委托给了Bean- DefinitionReaderUtils的registerBeanDefinition方法。
+
+4．最后发出响应事件，通知相关的监听器，这个bean已经加载完成了。
+
+配合时序图，可能会更容易理解。
+
+![](./NeatReader-1595769674813.png)
+
+#### 解析BeanDefinition
+
+我们从元素解析及信息提取开始，也就是
+
+~~~java
+BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele)
+~~~
+
+进入BeanDefinitionDelegate类的parseBeanDefinitionElement方法
+
+```java
+public BeanDefinitionHolder parseBeanDefinitionElement(Element ele) {
+   return parseBeanDefinitionElement(ele, null);
+}
+```
+
+```java
+    public BeanDefinitionHolder parseBeanDefinitionElement(Element ele, @Nullable BeanDefinition containingBean) {
+//    解析id属性
+      String id = ele.getAttribute(ID_ATTRIBUTE);
+//    解析name属性
+      String nameAttr = ele.getAttribute(NAME_ATTRIBUTE);
+
+//    分割name属性
+      List<String> aliases = new ArrayList<>();
+      if (StringUtils.hasLength(nameAttr)) {
+         String[] nameArr = StringUtils.tokenizeToStringArray(nameAttr, MULTI_VALUE_ATTRIBUTE_DELIMITERS);
+         aliases.addAll(Arrays.asList(nameArr));
+      }
+
+      String beanName = id;
+      if (!StringUtils.hasText(beanName) && !aliases.isEmpty()) {
+         beanName = aliases.remove(0);
+         if (logger.isTraceEnabled()) {
+            logger.trace("No XML 'id' specified - using '" + beanName +
+                  "' as bean name and " + aliases + " as aliases");
+         }
+      }
+
+      if (containingBean == null) {
+         checkNameUniqueness(beanName, aliases, ele);
+      }
+
+      AbstractBeanDefinition beanDefinition = parseBeanDefinitionElement(ele, beanName, containingBean);
+      if (beanDefinition != null) {
+         if (!StringUtils.hasText(beanName)) {
+            try {
+//             如果不存在beanName那么根据Spring提供的命名规则为当前bean生成对应的beanName
+               if (containingBean != null) {
+                  beanName = BeanDefinitionReaderUtils.generateBeanName(
+                        beanDefinition, this.readerContext.getRegistry(), true);
+               }
+               else {
+                  beanName = this.readerContext.generateBeanName(beanDefinition);
+                  // Register an alias for the plain bean class name, if still possible,
+                  // if the generator returned the class name plus a suffix.
+                  // This is expected for Spring 1.2/2.0 backwards compatibility.
+                  String beanClassName = beanDefinition.getBeanClassName();
+                  if (beanClassName != null &&
+                        beanName.startsWith(beanClassName) && beanName.length() > beanClassName.length() &&
+                        !this.readerContext.getRegistry().isBeanNameInUse(beanClassName)) {
+                     aliases.add(beanClassName);
+                  }
+               }
+               if (logger.isTraceEnabled()) {
+                  logger.trace("Neither XML 'id' nor 'name' specified - " +
+                        "using generated bean name [" + beanName + "]");
+               }
+            }
+            catch (Exception ex) {
+               error(ex.getMessage(), ele);
+               return null;
+            }
+         }
+         String[] aliasesArray = StringUtils.toStringArray(aliases);
+         return new BeanDefinitionHolder(beanDefinition, beanName, aliasesArray);
+      }
+
+      return null;
+   }
+```
+
+在开始对属性展开全面解析前，Spring在外层又做了一个当前层的功能架构，在当前层完成的主要工作包括如下内容。
+
+1．提取元素中的id以及name属性。
+
+2．进一步解析其他所有属性并统一封装至GenericBeanDefinition类型的实例中。
+
+3．如果检测到bean没有指定beanName，那么使用默认规则为此Bean生成beanName。
+
+4．将获取到的信息封装到BeanDefinitionHolder的实例中。
+
+我们进一步地查看步骤2中对标签其他属性的解析过程
+
+```java
+public AbstractBeanDefinition parseBeanDefinitionElement(
+      Element ele, String beanName, @Nullable BeanDefinition containingBean) {
+
+   this.parseState.push(new BeanEntry(beanName));
+
+   String className = null;
+   if (ele.hasAttribute(CLASS_ATTRIBUTE)) {
+      className = ele.getAttribute(CLASS_ATTRIBUTE).trim();
+   }
+   String parent = null;
+   if (ele.hasAttribute(PARENT_ATTRIBUTE)) {
+      parent = ele.getAttribute(PARENT_ATTRIBUTE);
+   }
+
+   try {
+      AbstractBeanDefinition bd = createBeanDefinition(className, parent);
+
+      parseBeanDefinitionAttributes(ele, beanName, containingBean, bd);
+      bd.setDescription(DomUtils.getChildElementValueByTagName(ele, DESCRIPTION_ELEMENT));
+
+      parseMetaElements(ele, bd);
+      parseLookupOverrideSubElements(ele, bd.getMethodOverrides());
+      parseReplacedMethodSubElements(ele, bd.getMethodOverrides());
+
+      parseConstructorArgElements(ele, bd);
+      parsePropertyElements(ele, bd);
+      parseQualifierElements(ele, bd);
+
+      bd.setResource(this.readerContext.getResource());
+      bd.setSource(extractSource(ele));
+
+      return bd;
+   }
+   catch (ClassNotFoundException ex) {
+      error("Bean class [" + className + "] not found", ele, ex);
+   }
+   catch (NoClassDefFoundError err) {
+      error("Class that bean class [" + className + "] depends on not found", ele, err);
+   }
+   catch (Throwable ex) {
+      error("Unexpected failure during bean definition parsing", ele, ex);
+   }
+   finally {
+      this.parseState.pop();
+   }
+
+   return null;
+}
+```
+
+1. 创建用于属性承载的BeanDefinition
+
+   BeanDefinition是一个接口，在Spring中存在三种实现：RootBeanDefinition、ChildBean-Definition以及GenericBeanDefinition。三种实现均继承了AbstractBeanDefiniton，其中BeanDefinition是配置文件\<bean>元素标签在容器中的内部表示形式。
+
+   \<bean>元素标签拥有class、scope、lazy-init等配置属性，BeanDefinition则提供了相应的beanClass、scope、lazyInit属性，BeanDefinition和\<bean>中的属性是一一对应的。其中RootBeanDefinition是最常用的实现类，它对应一般性的\<bean>元素标签，GenericBeanDefinition是自2.5版本以后新加入的bean文件配置属性定义类，是一站式服务类。
+
+   在配置文件中可以定义父\<bean>和子\<bean>，父\<bean>用RootBeanDefinition表示，而子\<bean>用ChildBeanDefiniton表示，而没有父\<bean>的\<bean>就使用RootBeanDefinition表示。AbstractBeanDefinition对两者共同的类信息进行抽象。
+
+   Spring通过BeanDefinition将配置文件中的\<bean>配置信息转换为容器的内部表示，并将这些BeanDefiniton注册到BeanDefinitonRegistry中。Spring容器的BeanDefinitionRegistry就像是Spring配置信息的内存数据库，主要是以map的形式保存，后续操作直接从BeanDefinitionRegistry中读取配置信息。它们之间的关系如图所示。
+
+   ![image-20200726220338770](/Users/q/Documents/Code/Github/MyGit/blog/Spring/Spring源码深度解析/image-20200726220338770.png)
+
+   由此可知，要解析属性首先要创建用于承载属性的实例，也就是创建GenericBeanDefinition类型的实例。而代码createBeanDefinition(className, parent)的作用就是实现此功能。
+
+   ```java
+   protected AbstractBeanDefinition createBeanDefinition(@Nullable String className, @Nullable String parentName)
+         throws ClassNotFoundException {
+   
+      return BeanDefinitionReaderUtils.createBeanDefinition(
+            parentName, className, this.readerContext.getBeanClassLoader());
+   }
+   ```
+
+   继续查看BeanDefinitionReaderUtils的createBeanDefinition方法
+
+   ~~~java
+   	public static AbstractBeanDefinition createBeanDefinition(
+   			@Nullable String parentName, @Nullable String className, @Nullable ClassLoader classLoader) throws ClassNotFoundException {
+   
+   		GenericBeanDefinition bd = new GenericBeanDefinition();
+   //		parentName可能为空
+   		bd.setParentName(parentName);
+   		if (className != null) {
+   			if (classLoader != null) {
+   //				如果classLoader不为空，则使用已传入的classLoader加载类对象，否则只是记录className
+   				bd.setBeanClass(ClassUtils.forName(className, classLoader));
+   			}
+   			else {
+   				bd.setBeanClassName(className);
+   			}
+   		}
+   		return bd;
+   	}
+   ~~~
+
+2. 解析各种属性
+
+   创建了bean信息的承载实例后，便可以进行bean信息的各种属性解析了，首先我们进入parseBeanDefinitionAttributes方法。parseBeanDefinitionAttributes方法是对element所有元素属性进行解析：
+
+   ```java
+       public AbstractBeanDefinition parseBeanDefinitionAttributes(Element ele, String beanName,
+            @Nullable BeanDefinition containingBean, AbstractBeanDefinition bd) {
+   
+   //    如果有singleton属性则提示错误日志
+         if (ele.hasAttribute(SINGLETON_ATTRIBUTE)) {
+            error("Old 1.x 'singleton' attribute in use - upgrade to 'scope' declaration", ele);
+         }
+   //    解析scope属性
+         else if (ele.hasAttribute(SCOPE_ATTRIBUTE)) {
+            bd.setScope(ele.getAttribute(SCOPE_ATTRIBUTE));
+         }
+         else if (containingBean != null) {
+   //       在嵌入beanDefinitino其况下没有单独指定scope属性则使用父类默认的属性
+            // Take default from containing bean in case of an inner bean definition.
+            bd.setScope(containingBean.getScope());
+         }
+   
+   //    解析abstract属性
+         if (ele.hasAttribute(ABSTRACT_ATTRIBUTE)) {
+            bd.setAbstract(TRUE_VALUE.equals(ele.getAttribute(ABSTRACT_ATTRIBUTE)));
+         }
+   
+   //    解析lazy-init属性
+         String lazyInit = ele.getAttribute(LAZY_INIT_ATTRIBUTE);
+         if (isDefaultValue(lazyInit)) {
+            lazyInit = this.defaults.getLazyInit();
+         }
+   //    没有设置或设置成其他字符都被设置为false
+         bd.setLazyInit(TRUE_VALUE.equals(lazyInit));
+   
+   //    解析autowire属性
+         String autowire = ele.getAttribute(AUTOWIRE_ATTRIBUTE);
+         bd.setAutowireMode(getAutowireMode(autowire));
+   
+   //    解析dependency-on属性
+         if (ele.hasAttribute(DEPENDS_ON_ATTRIBUTE)) {
+            String dependsOn = ele.getAttribute(DEPENDS_ON_ATTRIBUTE);
+            bd.setDependsOn(StringUtils.tokenizeToStringArray(dependsOn, MULTI_VALUE_ATTRIBUTE_DELIMITERS));
+         }
+   
+   //    解析autowire-candidate属性
+         String autowireCandidate = ele.getAttribute(AUTOWIRE_CANDIDATE_ATTRIBUTE);
+         if (isDefaultValue(autowireCandidate)) {
+            String candidatePattern = this.defaults.getAutowireCandidates();
+            if (candidatePattern != null) {
+               String[] patterns = StringUtils.commaDelimitedListToStringArray(candidatePattern);
+               bd.setAutowireCandidate(PatternMatchUtils.simpleMatch(patterns, beanName));
+            }
+         }
+         else {
+            bd.setAutowireCandidate(TRUE_VALUE.equals(autowireCandidate));
+         }
+   
+   //    primary属性
+         if (ele.hasAttribute(PRIMARY_ATTRIBUTE)) {
+            bd.setPrimary(TRUE_VALUE.equals(ele.getAttribute(PRIMARY_ATTRIBUTE)));
+         }
+   
+   //    init-method属性
+         if (ele.hasAttribute(INIT_METHOD_ATTRIBUTE)) {
+            String initMethodName = ele.getAttribute(INIT_METHOD_ATTRIBUTE);
+            bd.setInitMethodName(initMethodName);
+         }
+         else if (this.defaults.getInitMethod() != null) {
+            bd.setInitMethodName(this.defaults.getInitMethod());
+            bd.setEnforceInitMethod(false);
+         }
+   
+   //    destroy-method属性
+         if (ele.hasAttribute(DESTROY_METHOD_ATTRIBUTE)) {
+            String destroyMethodName = ele.getAttribute(DESTROY_METHOD_ATTRIBUTE);
+            bd.setDestroyMethodName(destroyMethodName);
+         }
+         else if (this.defaults.getDestroyMethod() != null) {
+            bd.setDestroyMethodName(this.defaults.getDestroyMethod());
+            bd.setEnforceDestroyMethod(false);
+         }
+   
+   //    factory-method属性
+         if (ele.hasAttribute(FACTORY_METHOD_ATTRIBUTE)) {
+            bd.setFactoryMethodName(ele.getAttribute(FACTORY_METHOD_ATTRIBUTE));
+         }
+   //    factory-bean属性
+         if (ele.hasAttribute(FACTORY_BEAN_ATTRIBUTE)) {
+            bd.setFactoryBeanName(ele.getAttribute(FACTORY_BEAN_ATTRIBUTE));
+         }
+   
+         return bd;
+      }
+   ```
+
+3. 解析子元素meta
+
+   
 
