@@ -997,5 +997,154 @@ public AbstractBeanDefinition parseBeanDefinitionElement(
 
 3. 解析子元素meta
 
+   回顾下meta属性的使用:
    
+   ~~~xml
+   <bean id="myTestBean" class="top.hellooooo.sourcecode.charpter02.bean.MyTestBean">
+   	<meta key="testStr" value="aaaaaa"/>
+   </bean>
+   ~~~
+   
+   这段代码并不会体现在MyTestBean的属性当中，而是一个额外的声明，当需要使用里面的信息的时候可以通过BeanDefinition的getAttribute(key)方法进行获取。
+   
+4. 解析子元素lookup-method
 
+   同样，子元素lookup-method似乎并不是很常用，但是在某些时候它的确是非常有用的属性，通常我们称它为获取器注入。引用*Spring in Action* 中的一句话：获取器注入是一种特殊的方法注入，它是把一个方法声明为返回某种类型的bean，但实际要返回的bean是在配置文件里面配置的，此方法可用在设计有些可插拔的功能上，解除程序依赖。我们看看具体的应用。
+
+   首先创建一个父类User
+
+   ~~~java
+   public class User {
+   
+        public void showMe(){
+            System.out.println("i am user");
+        }
+   }
+   ~~~
+
+   创建子类覆盖showMe方法
+
+   ```java
+   public class Teacher extends User{
+        public void showMe(){
+                System.out.println("i am Teacher");
+        }
+   }
+   ```
+
+   创建抽象类调用方法
+
+   ```java
+   public abstract class GetBeanTest {
+   
+        public void showMe(){
+            this.getBean().showMe();
+        }
+        public abstract User getBean();
+   }
+   ```
+
+   创建测试方法
+
+    ~~~java
+   import org.Springframework.context.ApplicationContext;
+   import org.Springframework.context.support.ClassPathXmlApplicationContext;
+   import test.lookup.app.GetBeanTest;
+   
+   public class Main {
+        public static void main(String[] args) {
+            ApplicationContext bf = 
+                    new ClassPathXmlApplicationContext("lookup.xml"); 
+            GetBeanTest test=(GetBeanTest) bf.getBean("getBeanTest");
+            test.showMe();
+        }
+   }
+    ~~~
+
+   很明显还缺少配置文件:
+
+   ~~~xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <beans xmlns="http://www.springframework.org/schema/beans"
+   	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   	   xmlns:context="http://www.springframework.org/schema/context"
+   	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+           https://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+           https://www.springframework.org/schema/context/spring-context.xsd">
+   	<bean id="getBeanTest" class="top.hellooooo.sourcecode.charpter02.test.lookup.GetBeanTest">
+   		<lookup-method name="getBean" bean="teacher"/>
+   	</bean>
+   	<bean id="teacher" class="top.hellooooo.sourcecode.charpter02.bean.Teacher"/>
+   </beans>
+   ~~~
+
+   运行之后，打印
+
+    ~~~
+   i am Teacher
+    ~~~
+
+   如果业务变更，teacher中的业务逻辑不符合要求了，需要进行替换，替换成如下逻辑类
+
+   ~~~java
+   public class Student extends User {
+   
+        public void showMe(){
+            System.out.println("i am student");
+        }
+   }
+   ~~~
+
+   修改配置文件:
+
+   ~~~xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <beans xmlns="http://www.springframework.org/schema/beans"
+   	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   	   xmlns:context="http://www.springframework.org/schema/context"
+   	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+           https://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+           https://www.springframework.org/schema/context/spring-context.xsd">
+   
+   	<bean id="getBeanTest" class="top.hellooooo.sourcecode.charpter02.test.lookup.GetBeanTest">
+   		<lookup-method name="getBean" bean="student"/>
+   	</bean>
+   
+   	<bean id="student" class="top.hellooooo.sourcecode.charpter02.bean.Student"/>
+   	<bean id="teacher" class="top.hellooooo.sourcecode.charpter02.bean.Teacher"/>
+   </beans>
+   ~~~
+
+   结果：
+
+   ~~~
+   i am Student
+   ~~~
+
+   looup-method解析：
+
+   ```java
+       public void parseLookupOverrideSubElements(Element beanEle, MethodOverrides overrides) {
+         NodeList nl = beanEle.getChildNodes();
+         for (int i = 0; i < nl.getLength(); i++) {
+            Node node = nl.item(i);
+   //       仅当在Spring默认bean的子元素下且为 <lookup-method时有效
+            if (isCandidateElement(node) && nodeNameEquals(node, LOOKUP_METHOD_ELEMENT)) {
+               Element ele = (Element) node;
+   //          获取要修饰的方法名
+               String methodName = ele.getAttribute(NAME_ATTRIBUTE);
+   //          获取配置返回的bean
+               String beanRef = ele.getAttribute(BEAN_ELEMENT);
+               LookupOverride override = new LookupOverride(methodName, beanRef);
+               override.setSource(extractSource(ele));
+               overrides.addOverride(override);
+            }
+         }
+      }
+   ```
+
+   上面的代码很眼熟，似乎与parseMetaElements的代码大同小异，最大的区别就是在if判断中的节点名称在这里被修改为LOOKUP_METHOD_ELEMENT。还有，在数据存储上面通过使用LookupOverride类型的实体类来进行数据承载并记录在AbstractBeanDefinition中的methodOverrides属性中。
+
+   
