@@ -1912,3 +1912,596 @@ public static void registerBeanDefinition(
 }
 ```
 
+可以看出，解析的beanDefinition都会被注册到BeanDefinitionRegistry类型的实例registry中，而对于beanDefinition的注册分成了两部分：通过beanName的注册以及通过别名的注册。
+
+1.通过beanName注册BeanDefinition
+
+```java
+    public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition)
+         throws BeanDefinitionStoreException {
+
+      Assert.hasText(beanName, "Bean name must not be empty");
+      Assert.notNull(beanDefinition, "BeanDefinition must not be null");
+
+      if (beanDefinition instanceof AbstractBeanDefinition) {
+         try {
+//          注册前的最后一次校验，这次校验主要是对于AbstractBeanDefinition属性中的methodOverrides校验
+//          校验methodOverrides是否与工厂方法并存或者methodOverrides对应的方法根本不存在
+            ((AbstractBeanDefinition) beanDefinition).validate();
+         }
+         catch (BeanDefinitionValidationException ex) {
+            throw new BeanDefinitionStoreException(beanDefinition.getResourceDescription(), beanName,
+                  "Validation of bean definition failed", ex);
+         }
+      }
+
+      BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
+      if (existingDefinition != null) {
+         if (!isAllowBeanDefinitionOverriding()) {
+            throw new BeanDefinitionOverrideException(beanName, beanDefinition, existingDefinition);
+         }
+         else if (existingDefinition.getRole() < beanDefinition.getRole()) {
+            // e.g. was ROLE_APPLICATION, now overriding with ROLE_SUPPORT or ROLE_INFRASTRUCTURE
+            if (logger.isInfoEnabled()) {
+               logger.info("Overriding user-defined bean definition for bean '" + beanName +
+                     "' with a framework-generated bean definition: replacing [" +
+                     existingDefinition + "] with [" + beanDefinition + "]");
+            }
+         }
+         else if (!beanDefinition.equals(existingDefinition)) {
+            if (logger.isDebugEnabled()) {
+               logger.debug("Overriding bean definition for bean '" + beanName +
+                     "' with a different definition: replacing [" + existingDefinition +
+                     "] with [" + beanDefinition + "]");
+            }
+         }
+         else {
+            if (logger.isTraceEnabled()) {
+               logger.trace("Overriding bean definition for bean '" + beanName +
+                     "' with an equivalent definition: replacing [" + existingDefinition +
+                     "] with [" + beanDefinition + "]");
+            }
+         }
+         this.beanDefinitionMap.put(beanName, beanDefinition);
+      }
+      else {
+         if (hasBeanCreationStarted()) {
+//          beanDefinitionMap是全局变量，这里会发生并发访问的情况
+            // Cannot modify startup-time collection elements anymore (for stable iteration)
+            synchronized (this.beanDefinitionMap) {
+               this.beanDefinitionMap.put(beanName, beanDefinition);
+               List<String> updatedDefinitions = new ArrayList<>(this.beanDefinitionNames.size() + 1);
+               updatedDefinitions.addAll(this.beanDefinitionNames);
+               updatedDefinitions.add(beanName);
+               this.beanDefinitionNames = updatedDefinitions;
+               removeManualSingletonName(beanName);
+            }
+         }
+         else {
+            // Still in startup registration phase
+            this.beanDefinitionMap.put(beanName, beanDefinition);
+            this.beanDefinitionNames.add(beanName);
+            removeManualSingletonName(beanName);
+         }
+         this.frozenBeanDefinitionNames = null;
+      }
+
+      if (existingDefinition != null || containsSingleton(beanName)) {
+         resetBeanDefinition(beanName);
+      }
+      else if (isConfigurationFrozen()) {
+         clearByTypeCache();
+      }
+   }
+```
+
+主要进行了几个步骤。
+
+1．对AbstractBeanDefinition的校验。在解析XML文件的时候我们提过校验，但是此校验非彼校验，之前的校验时针对于XML格式的校验，而此时的校验时针是对于AbstractBean- Definition的methodOverrides属性的。
+
+2．对beanName已经注册的情况的处理。如果设置了不允许bean的覆盖，则需要抛出异常，否则直接覆盖。
+
+3．加入map缓存。
+
+4．清除解析之前留下的对应beanName的缓存。
+
+2.通过别名注册BeanDefinition
+
+```java
+    public void registerAlias(String name, String alias) {
+      Assert.hasText(name, "'name' must not be empty");
+      Assert.hasText(alias, "'alias' must not be empty");
+      synchronized (this.aliasMap) {
+//       如果beanName和alias相同的话不记录alias，删除对应的alias
+         if (alias.equals(name)) {
+            this.aliasMap.remove(alias);
+            if (logger.isDebugEnabled()) {
+               logger.debug("Alias definition '" + alias + "' ignored since it points to same name");
+            }
+         }
+         else {
+            String registeredName = this.aliasMap.get(alias);
+            if (registeredName != null) {
+               if (registeredName.equals(name)) {
+                  // An existing alias - no need to re-register
+                  return;
+               }
+//             如果alias不允许被覆盖则抛出异常
+               if (!allowAliasOverriding()) {
+                  throw new IllegalStateException("Cannot define alias '" + alias + "' for name '" +
+                        name + "': It is already registered for name '" + registeredName + "'.");
+               }
+               if (logger.isDebugEnabled()) {
+                  logger.debug("Overriding alias '" + alias + "' definition for registered name '" +
+                        registeredName + "' with new target name '" + name + "'");
+               }
+            }
+//          当A->B存在时，若有A->C->B则抛出异常
+            checkForAliasCircle(name, alias);
+            this.aliasMap.put(alias, name);
+            if (logger.isTraceEnabled()) {
+               logger.trace("Alias definition '" + alias + "' registered for name '" + name + "'");
+            }
+         }
+      }
+   }
+```
+
+注册alias的步骤如下。
+
+1．alias与beanName相同情况处理。若alias与beanName并名称相同则不需要处理并删除掉原有alias。
+
+2．alias覆盖处理。若aliasName已经使用并已经指向了另一beanName则需要用户的设置进行处理。
+
+3．alias循环检查。当A->B存在时，若再次出现A->C->B时候则会抛出异常。
+
+4．注册alias。
+
+#### 通知监听器解析及注册完成
+
+```java
+getReaderContext().fireComponentRegistered(new BeanComponentDefinition(bdHolder));
+```
+
+目前Spring中并没有对此事件做任何逻辑处理。
+
+### alias标签的解析
+
+有时我们期望能在当前位置为那些在别处定义的bean引入别名。在XML配置文件中，可用单独的\<alias/>元素来完成bean别名的定义。如配置文件中定义了一个JavaBean：
+
+```xml
+<bean id="testBean" class="com.test"/>
+```
+
+要给这个JavaBean增加别名，以方便不同对象来调用。我们就可以直接使用bean标签中的name属性：
+
+同样，Spring还有另外一种声明别名的方式
+
+```xml
+<bean id="testBean" class="com.test"/>
+    <alias name="testBean" alias="testBean,testBean2"/>
+```
+
+考虑一个更为具体的例子，组件A在XML配置文件中定义了一个名为componentA的DataSource类型的bean，但组件B却想在其XML文件中以componentB命名来引用此bean。而且在主程序MyApp的XML配置文件中，希望以myApp的名字来引用此bean。最后容器加载3个XML文件来生成最终的ApplicationContext。在此情形下，可通过在配置文件中添加下列alias元素来实现：
+
+```xml
+<alias name="componentA" alias="componentB"/>
+     <alias name="componentA" alias="myApp" />
+```
+
+现在再来深入分析下对于alias标签的解析过程
+
+~~~java
+	protected void processAliasRegistration(Element ele) {
+//		获取beanName
+		String name = ele.getAttribute(NAME_ATTRIBUTE);
+//		获取alias
+		String alias = ele.getAttribute(ALIAS_ATTRIBUTE);
+		boolean valid = true;
+		if (!StringUtils.hasText(name)) {
+			getReaderContext().error("Name must not be empty", ele);
+			valid = false;
+		}
+		if (!StringUtils.hasText(alias)) {
+			getReaderContext().error("Alias must not be empty", ele);
+			valid = false;
+		}
+		if (valid) {
+			try {
+				getReaderContext().getRegistry().registerAlias(name, alias);
+			}
+			catch (Exception ex) {
+				getReaderContext().error("Failed to register alias '" + alias +
+						"' for bean with name '" + name + "'", ele, ex);
+			}
+//			别名注册后通知监听器做相应处理
+			getReaderContext().fireAliasRegistered(name, alias, extractSource(ele));
+		}
+	}
+~~~
+
+### import标签的解析
+
+```xml
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE beans PUBLIC "-//Spring//DTD BEAN//EN" "http://www.springframework.org/dtd/  
+Spring-beans.dtd"> 
+<beans>
+
+    <import resource="customerContext.xml" />
+    <import resource="systemContext.xml" />
+    ... ...
+
+</beans>
+```
+
+使用import的方式导入有模块配置文件，以后若有新模块的加入，那就可以简单修改这个文件了。这样大大简化了配置后期维护的复杂度，并使配置模块化，易于管理。我们来看看Spring是如何解析import配置文件的。
+
+```java
+    protected void importBeanDefinitionResource(Element ele) {
+//    获取resource属性
+      String location = ele.getAttribute(RESOURCE_ATTRIBUTE);
+//    如果不存在resource属性则不做任何处理
+      if (!StringUtils.hasText(location)) {
+         getReaderContext().error("Resource location must not be empty", ele);
+         return;
+      }
+
+      // Resolve system properties: e.g. "${user.dir}"
+      location = getReaderContext().getEnvironment().resolveRequiredPlaceholders(location);
+
+      Set<Resource> actualResources = new LinkedHashSet<>(4);
+
+      // Discover whether the location is an absolute or relative URI
+      boolean absoluteLocation = false;
+      try {
+         absoluteLocation = ResourcePatternUtils.isUrl(location) || ResourceUtils.toURI(location).isAbsolute();
+      }
+      catch (URISyntaxException ex) {
+         // cannot convert to an URI, considering the location relative
+         // unless it is the well-known Spring prefix "classpath*:"
+      }
+
+      // Absolute or relative?
+//    绝对URI直接过呢句地址加载对应的配置文件
+      if (absoluteLocation) {
+         try {
+            int importCount = getReaderContext().getReader().loadBeanDefinitions(location, actualResources);
+            if (logger.isTraceEnabled()) {
+               logger.trace("Imported " + importCount + " bean definitions from URL location [" + location + "]");
+            }
+         }
+         catch (BeanDefinitionStoreException ex) {
+            getReaderContext().error(
+                  "Failed to import bean definitions from URL location [" + location + "]", ele, ex);
+         }
+      }
+      else {
+         // No URL -> considering resource location as relative to the current file.
+//       如果是相对的则根据相对地址计算出绝对地址
+         try {
+            int importCount;
+//          Resource存在多个子类实现类如VfsResource、FileSystemResource等
+//          每个resource的createRelative方式实现都不一样，所以这里先使用子类的方法尝试解析
+            Resource relativeResource = getReaderContext().getResource().createRelative(location);
+            if (relativeResource.exists()) {
+               importCount = getReaderContext().getReader().loadBeanDefinitions(relativeResource);
+               actualResources.add(relativeResource);
+            }
+            else {
+//             如果解析不成功，则使用默认的解析器
+               String baseLocation = getReaderContext().getResource().getURL().toString();
+               importCount = getReaderContext().getReader().loadBeanDefinitions(
+                     StringUtils.applyRelativePath(baseLocation, location), actualResources);
+            }
+            if (logger.isTraceEnabled()) {
+               logger.trace("Imported " + importCount + " bean definitions from relative location [" + location + "]");
+            }
+         }
+         catch (IOException ex) {
+            getReaderContext().error("Failed to resolve current resource location", ele, ex);
+         }
+         catch (BeanDefinitionStoreException ex) {
+            getReaderContext().error(
+                  "Failed to import bean definitions from relative location [" + location + "]", ele, ex);
+         }
+      }
+//    解析后进行监听器激活处理
+      Resource[] actResArray = actualResources.toArray(new Resource[0]);
+      getReaderContext().fireImportProcessed(location, actResArray, extractSource(ele));
+   }
+```
+
+解析<import标签时，Spring进行解析的步骤大致如下。
+
+1．获取resource属性所表示的路径。
+
+2．解析路径中的系统属性，格式如“${user.dir}”。
+
+3．判定location是绝对路径还是相对路径。
+
+4．如果是绝对路径则递归调用bean的解析过程，进行另一次的解析。
+
+5．如果是相对路径则计算出绝对路径并进行解析。
+
+6．通知监听器，解析完成。
+
+### 嵌入式beans标签的解析
+
+对于嵌入式的beans标签，相信大家使用过或者至少接触过，非常类似于import标签所提供的功能，使用如下：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.Springframework.org/schema/beans"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.Springframework.org/schema/beans http://www.Springframework. org/schema/beans/Spring-beans.xsd">
+     <bean id="aa" class="test.aa"/>
+     <beans>
+     </beans>
+</beans>
+```
+
+## 自定义标签的解析
+
+重新回到
+
+```java
+    protected void parseBeanDefinitions(Element root, BeanDefinitionParserDelegate delegate) {
+//    对beans的处理
+      if (delegate.isDefaultNamespace(root)) {
+         NodeList nl = root.getChildNodes();
+         for (int i = 0; i < nl.getLength(); i++) {
+            Node node = nl.item(i);
+            if (node instanceof Element) {
+               Element ele = (Element) node;
+               if (delegate.isDefaultNamespace(ele)) {
+//                对bean的处理
+                  parseDefaultElement(ele, delegate);
+               }
+               else {
+//                对bean的处理
+                  delegate.parseCustomElement(ele);
+               }
+            }
+         }
+      }
+      else {
+         delegate.parseCustomElement(root);
+      }
+   }
+```
+
+### 自定义标签使用
+
+没用过，跳过
+
+## bean的加载
+
+```java
+    protected <T> T doGetBean(
+         String name, @Nullable Class<T> requiredType, @Nullable Object[] args, boolean typeCheckOnly)
+         throws BeansException {
+//    提取对应的beanName
+      String beanName = transformedBeanName(name);
+      Object bean;
+
+//    检查缓存中或者实例工厂中是否有对应的实例
+//    在创建单例bean的时候后存在依赖注入的情况，而在创建依赖的时候为了避免循环依赖，
+//    Spring创建bean的原则是不等bean创建完成就会将创建bean的ObjectFactory提早曝光
+//    也就是将ObjectFactory加入缓存，一旦下一个bean创建时候需要创建依赖上个bean则直接使用ObjectFactory
+//    直接尝试从缓存获取或者singletonFactories中的ObjectFactory中获取
+      // Eagerly check singleton cache for manually registered singletons.
+      Object sharedInstance = getSingleton(beanName);
+      if (sharedInstance != null && args == null) {
+         if (logger.isTraceEnabled()) {
+            if (isSingletonCurrentlyInCreation(beanName)) {
+               logger.trace("Returning eagerly cached instance of singleton bean '" + beanName +
+                     "' that is not fully initialized yet - a consequence of a circular reference");
+            }
+            else {
+               logger.trace("Returning cached instance of singleton bean '" + beanName + "'");
+            }
+         }
+//       返回对应的实例，有时候存在诸如BeanFactory的情况并不是直接返回实例本身而是返回指定方法返回的实例
+         bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
+      }
+
+      else {
+
+//       只有在单例情况下才会尝试解决循环依赖，原型模式情况下，如果存在
+//       A中有B的属性，B中有A的属性，那么当依赖注入的时候，就会产生当A还未创建完的时候因为
+//       对于B的创建再次返回创建A，造成循环依赖，也就是下面的情况
+         // Fail if we're already creating this bean instance:
+         // We're assumably within a circular reference.
+         if (isPrototypeCurrentlyInCreation(beanName)) {
+            throw new BeanCurrentlyInCreationException(beanName);
+         }
+
+         // Check if bean definition exists in this factory.
+         BeanFactory parentBeanFactory = getParentBeanFactory();
+//       如果beanDefinitionMap中也就是所有已经加载的类中不包括beanName则尝试从
+//       parentBeanFactory中检测
+         if (parentBeanFactory != null && !containsBeanDefinition(beanName)) {
+            // Not found -> check parent.
+            String nameToLookup = originalBeanName(name);
+            if (parentBeanFactory instanceof AbstractBeanFactory) {
+               return ((AbstractBeanFactory) parentBeanFactory).doGetBean(
+                     nameToLookup, requiredType, args, typeCheckOnly);
+            }
+            else if (args != null) {
+//             递归查找
+               // Delegation to parent with explicit args.
+               return (T) parentBeanFactory.getBean(nameToLookup, args);
+            }
+            else if (requiredType != null) {
+               // No args -> delegate to standard getBean method.
+               return parentBeanFactory.getBean(nameToLookup, requiredType);
+            }
+            else {
+               return (T) parentBeanFactory.getBean(nameToLookup);
+            }
+         }
+
+         if (!typeCheckOnly) {
+            markBeanAsCreated(beanName);
+         }
+
+         try {
+//          将存储XML配置文件的GernericBeanDefinition转换为RootBeanDefinition
+            RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
+            checkMergedBeanDefinition(mbd, beanName, args);
+
+            // Guarantee initialization of beans that the current bean depends on.
+            String[] dependsOn = mbd.getDependsOn();
+//          若存在依赖则需要递归实例化依赖的bean
+            if (dependsOn != null) {
+               for (String dep : dependsOn) {
+                  if (isDependent(beanName, dep)) {
+                     throw new BeanCreationException(mbd.getResourceDescription(), beanName,
+                           "Circular depends-on relationship between '" + beanName + "' and '" + dep + "'");
+                  }
+//                缓存依赖调用
+                  registerDependentBean(dep, beanName);
+                  try {
+                     getBean(dep);
+                  }
+                  catch (NoSuchBeanDefinitionException ex) {
+                     throw new BeanCreationException(mbd.getResourceDescription(), beanName,
+                           "'" + beanName + "' depends on missing bean '" + dep + "'", ex);
+                  }
+               }
+            }
+
+//          实例化依赖的bean后便可以实例化mdb本身了
+//          singleton模式的创建
+            // Create bean instance.
+            if (mbd.isSingleton()) {
+               sharedInstance = getSingleton(beanName, () -> {
+                  try {
+                     return createBean(beanName, mbd, args);
+                  }
+                  catch (BeansException ex) {
+                     // Explicitly remove instance from singleton cache: It might have been put there
+                     // eagerly by the creation process, to allow for circular reference resolution.
+                     // Also remove any beans that received a temporary reference to the bean.
+                     destroySingleton(beanName);
+                     throw ex;
+                  }
+               });
+               bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
+            }
+
+            else if (mbd.isPrototype()) {
+               // It's a prototype -> create a new instance.
+               Object prototypeInstance = null;
+               try {
+                  beforePrototypeCreation(beanName);
+                  prototypeInstance = createBean(beanName, mbd, args);
+               }
+               finally {
+                  afterPrototypeCreation(beanName);
+               }
+               bean = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);
+            }
+
+            else {
+//             指定的scope上实例化bean
+               String scopeName = mbd.getScope();
+               if (!StringUtils.hasLength(scopeName)) {
+                  throw new IllegalStateException("No scope name defined for bean ´" + beanName + "'");
+               }
+               Scope scope = this.scopes.get(scopeName);
+               if (scope == null) {
+                  throw new IllegalStateException("No Scope registered for scope name '" + scopeName + "'");
+               }
+               try {
+                  Object scopedInstance = scope.get(beanName, () -> {
+                     beforePrototypeCreation(beanName);
+                     try {
+                        return createBean(beanName, mbd, args);
+                     }
+                     finally {
+                        afterPrototypeCreation(beanName);
+                     }
+                  });
+                  bean = getObjectForBeanInstance(scopedInstance, name, beanName, mbd);
+               }
+               catch (IllegalStateException ex) {
+                  throw new ScopeNotActiveException(beanName, scopeName, ex);
+               }
+            }
+         }
+         catch (BeansException ex) {
+            cleanupAfterBeanCreationFailure(beanName);
+            throw ex;
+         }
+      }
+
+      // Check if required type matches the type of the actual bean instance.
+      if (requiredType != null && !requiredType.isInstance(bean)) {
+         try {
+            T convertedBean = getTypeConverter().convertIfNecessary(bean, requiredType);
+            if (convertedBean == null) {
+               throw new BeanNotOfRequiredTypeException(name, requiredType, bean.getClass());
+            }
+            return convertedBean;
+         }
+         catch (TypeMismatchException ex) {
+            if (logger.isTraceEnabled()) {
+               logger.trace("Failed to convert bean '" + name + "' to required type '" +
+                     ClassUtils.getQualifiedName(requiredType) + "'", ex);
+            }
+            throw new BeanNotOfRequiredTypeException(name, requiredType, bean.getClass());
+         }
+      }
+      return (T) bean;
+   }
+```
+
+加载过程大致如下：
+
+1.转换对应beanName
+
+这里传入的name参数可能是别名，也可能是FactoryBean，所以需要进行一系列的解析，这些解析内容包括如下内容。
+
+- 去除FactoryBean的修饰符，也就是如果name="&aa"，那么会首先去除&而使name="aa"。
+- 取指定alias所表示的最终beanName，例如别名A指向名称为B的bean则返回B；若别名A指向别名B，别名B又指向名称为C的bean则返回C。
+
+2.尝试从缓存中加载单例
+
+单例在Spring的同一个容器内只会被创建一次，后续再获取bean，就直接从单例缓存中获取了。当然这里也只是尝试加载，首先尝试从缓存中加载，如果加载不成功则再次尝试从singletonFactories中加载。因为在创建单例bean的时候会存在依赖注入的情况，而在创建依赖的时候为了避免循环依赖，在Spring中创建bean的原则是不等bean创建完成就会将创建bean的ObjectFactory提早曝光加入到缓存中，一旦下一个bean创建时候需要依赖上一个bean则直接使用ObjectFactory。
+
+3.bean的实例化
+
+如果从缓存中得到了bean的原始状态，则需要对bean进行实例化。这里有必要强调一下，缓存中记录的只是最原始的bean状态，并不一定是我们最终想要的bean。举个例子，假如我们需要对工厂bean进行处理，那么这里得到的其实是工厂bean的初始状态，但是我们真正需要的是工厂bean中定义的factory-method方法中返回的bean，而getObjectForBeanInstance就是完成这个工作的。
+
+4.原型模式的依赖检查
+
+只有在单例情况下才会尝试解决循环依赖，如果存在A中有B的属性，B中有A的属性，那么当依赖注入的时候，就会产生当A还未创建完的时候因为对于B的创建再次返回创建A，造成循环依赖，也就是情况：isPrototypeCurrentlyInCreation(beanName)判断true。
+
+5.检测parentBeanFactory
+
+从代码上看，如果缓存没有数据的话直接转到父类工厂上去加载了，这是为什么呢？
+
+可能读者忽略了一个很重要的判断条件：parentBeanFactory != null && !containsBean Definition (beanName)，parentBeanFactory != null。parentBeanFactory如果为空，则其他一切都是浮云，这个没什么说的，但是!containsBeanDefinition(beanName)就比较重要了，它是在检测如果当前加载的XML配置文件中不包含beanName所对应的配置，就只能到parentBeanFactory去尝试下了，然后再去递归的调用getBean方法。
+
+6.将存储XML配置文件的GernericBeanDefinition转换为RootBeanDefinition
+
+因为从XML配置文件中读取到的bean信息是存储在GernericBeanDefinition中的，但是所有的bean后续处理都是针对于RootBeanDefinition的，所以这里需要进行一个转换，转换的同时如果父类bean不为空的话，则会一并合并父类的属性。
+
+7.寻找依赖
+
+因为bean的初始化过程中很可能会用到某些属性，而某些属性很可能是动态配置的，并且配置成依赖于其他的bean，那么这个时候就有必要先加载依赖的bean，所以，在Spring的加载顺序中，在初始化某一个bean的时候首先会初始化这个bean所对应的依赖。
+
+8.针对不同的scope进行bean的创建
+
+Spring会根据不同的配置进行不同的初始化策略。
+
+9.类型转换
+
+程序到这里返回bean后已经基本结束了，通常对该方法的调用参数requiredType是为空的，但是可能会存在这样的情况，返回的bean其实是个String，但是requiredType却传入Integer类型，那么这时候本步骤就会起作用了，它的功能是将返回的bean转换为requiredType所指定的类型。当然，String转换为Integer是最简单的一种转换，在Spring中提供了各种各样的转换器，用户也可以自己扩展转换器来满足需求。
+
+![](/Users/q/Documents/Code/Github/MyGit/blog/Spring/Spring源码深度解析/NeatReader-1595924649056.png)
+
+### FactoryBean的使用
+
