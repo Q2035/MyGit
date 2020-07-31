@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class QRCodeApplication {
     public static void main(String[] args) throws IOException, ChecksumException, NotFoundException, FormatException {
-        System.out.println(getInfoFromQRcode("/tmp/bqr3.png"));
+        System.out.println(getInfoFromQRcode("D:\\Temp\\Untitled.png"));
     }
 
     public static void createQR() throws IOException, WriterException {
