@@ -2,6 +2,7 @@ package top.hellooooo.jobsubmission.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,10 +13,7 @@ import top.hellooooo.jobsubmission.pojo.*;
 import top.hellooooo.jobsubmission.service.BlackListService;
 import top.hellooooo.jobsubmission.service.JobService;
 import top.hellooooo.jobsubmission.service.UserService;
-import top.hellooooo.jobsubmission.util.AccountStatus;
-import top.hellooooo.jobsubmission.util.CommonResult;
-import top.hellooooo.jobsubmission.util.FilenameParser;
-import top.hellooooo.jobsubmission.util.IndexUtil;
+import top.hellooooo.jobsubmission.util.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +39,11 @@ public class UserController {
     @Value("${file.basepath}")
     private String publicBasePath;
 
+    @Value("${custom.redis.progress}")
+    private String UPLOAD_PROGRESS;
+
+    private final RedisUtil redisUtil;
+
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
@@ -51,12 +54,13 @@ public class UserController {
      * @param blackListService
      * @param filenameParser
      */
-    public UserController(UserService userService, IndexUtil indexUtil, JobService jobService, BlackListService blackListService, FilenameParser filenameParser) {
+    public UserController(UserService userService, IndexUtil indexUtil, JobService jobService, BlackListService blackListService, FilenameParser filenameParser, RedisUtil redisUtil) {
         this.userService = userService;
         this.indexUtil = indexUtil;
         this.jobService = jobService;
         this.blackListService = blackListService;
         this.filenameParser = filenameParser;
+        this.redisUtil = redisUtil;
     }
 
 
@@ -211,6 +215,7 @@ public class UserController {
             }
         }
         model.addAttribute("job", job);
+        model.addAttribute("username", user.getUsername());
         return "user/jobupload";
     }
 
@@ -261,21 +266,61 @@ public class UserController {
         if (!dest.getParentFile().exists()){
             dest.getParentFile().mkdirs();
         }
-        try {
-            file.transferTo(dest);
-        } catch (IOException e) {
-            logger.error("upload error!");
-            e.printStackTrace();
-            result.setMessage("upload error!");
-            result.setSuccess(false);
-            return result;
-        }
-//        到这里的话正常来说就是提交完成了
+        //            更改思路
+//            file.transferTo(dest);
+        doFileUpload(file, dest, user);
+        //        到这里的话正常来说就是提交完成了
 //        更新数据库即可
         jobService.updateJobAndSubmitPerson(user.getId(),jobId);
         result.setMessage("Success!");
         result.setSuccess(true);
         logger.info(result.toString());
         return result;
+    }
+
+    private void doFileUpload(MultipartFile sourceFile, File destFile, User user) {
+        try (BufferedInputStream bufferedInputStream = new BufferedInputStream(sourceFile.getInputStream());
+             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(destFile))) {
+            //        设置上传实体类
+            ProgressEntity progressEntity = new ProgressEntity();
+            progressEntity.setpContentLength(sourceFile.getSize());
+
+            redisUtil.set(UPLOAD_PROGRESS + user.getUsername(), progressEntity);
+            //            这里需要注意
+            byte[] bufferBytes = new byte[1024000];
+            long tempLength;
+            long startTime = System.currentTimeMillis();
+//            只要没有读取到文件尾部，就不断读取
+            while ((tempLength = bufferedInputStream.read(bufferBytes)) != -1) {
+                bufferedOutputStream.write(bufferBytes);
+//                从Redis中获取文件上传进度，并进行更新
+                progressEntity = (ProgressEntity) redisUtil.get(UPLOAD_PROGRESS + user.getUsername());
+                progressEntity.setpBytesRead(progressEntity.getpBytesRead() + tempLength);
+                redisUtil.set(UPLOAD_PROGRESS + user.getUsername(), progressEntity);
+            }
+            logger.info("Time Spent: {} ms", System.currentTimeMillis() - startTime);
+//            一旦上传完成，就将Redis的数据移除
+            redisUtil.remove(UPLOAD_PROGRESS + user.getUsername());
+            bufferedOutputStream.flush();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @ResponseBody
+    @GetMapping("/progress/{username}")
+    public CommonResult<Integer> uploadProgress(@PathVariable("username") String username) {
+        CommonResult<Integer> commonResult = new CommonResult<>();
+        ProgressEntity progressEntity = (ProgressEntity) redisUtil.get(UPLOAD_PROGRESS + username);
+        if (progressEntity != null) {
+            logger.info("read {} all {} percent {}", progressEntity.getpBytesRead(), progressEntity.getpContentLength(), ((float) progressEntity.getpBytesRead() / progressEntity.getpContentLength()));
+            commonResult.setAll((int)((float)progressEntity.getpBytesRead() / progressEntity.getpContentLength() * 100), "Get Progress", true);
+            return commonResult;
+        }
+        commonResult.setAll(0, "No Progress Found.", false);
+        logger.info(commonResult.toString());
+        return commonResult;
     }
 }

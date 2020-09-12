@@ -6,6 +6,7 @@
 
 <body style="background-color: #F2F2F2">
 <br />
+<input hidden="hidden" th:value="${username}" id="username">
 <div class="layui-container">
 
     <input type="hidden" id="jobId" th:value="${job.id}">
@@ -24,7 +25,7 @@
                 <br />
     <!--            进度条-->
                 <div class="layui-progress layui-progress-big" lay-showpercent="true" lay-filter="demo">
-                    <div class="layui-progress-bar layui-bg-red" lay-percent="0%"></div>
+                    <div id="progress" class="layui-progress-bar layui-bg-red" lay-percent="0%"></div>
                 </div>
             </div>
         </div>
@@ -35,9 +36,16 @@
     <br />
     <br />
     <br />
-    <p>info:由于带宽只有1Mbps，也就是100多k，开始上传后请耐心等待，不要点击返回或关闭页面。</p>
+    <p>info:</p>
     <br />
-    <p>上传完成会有提示出现。</p>
+    <p>&nbsp;&nbsp;1.由于带宽只有1Mbps，也就是100多k，开始上传后请耐心等待，不要点击返回或关闭页面。</p>
+    <br />
+    <p>&nbsp;&nbsp;2.等待4s左右，进度条会开始加载。</p>
+    <br />
+    <p>&nbsp;&nbsp;3.点击“click to submit”开始上传。</p>
+    <br />
+    <p>&nbsp;&nbsp;4.文件大小限制为100M。</p>
+    <br />
 </div>
 
 </body>
@@ -45,6 +53,13 @@
 <!--/*/<th:block th:replace="fragments :: script">/*/-->
 <!--/*/</th:block>/*/-->
 <script>
+
+    var username = $('#username').val();
+
+    var dataCount = 20;
+
+    var progress = 0;
+
     layui.use('form', function(){
         var form = layui.form;
         form.render();
@@ -60,7 +75,7 @@
             elem: '#test10'
             ,url: "/job/user/fileupload"
             //限制大小 100M
-            ,size: 100000
+            // ,size: 100000
             ,auto: false//是否选完文件后自动上传
             ,bindAction: '#testListAction'//指向一个按钮触发上传
             ,data: {
@@ -69,21 +84,47 @@
             ,method: 'post'
             //接收任何类型的文件
             ,accept: 'file'
+            ,before: function (obj){
+                getApi(element);
+            }
             //完成回调
             ,done: function(res){
                 layer.msg(res.message);
                 if (res.success){
                     layui.$('#uploadDemoView').removeClass('layui-hide').attr('src');
                 }
-                element.progress('demo','100%')
-            },
-            progress: function (n, element) {
-                var percent = n + '%';
-                element.progress('demo',percent)
+                element.progress('demo','100%');
             }
         });
+
+        layer.msg(username);
     });
 
+    function getApi(element) {
+        $.ajax({
+            url: 'http://localhost:8080/job/user/progress/' + username,
+            type: 'get',
+            dataType: 'json',
+            success: function (data) {
+                //方法中传入的参数data为后台获取的数据
+                console.log(data);
+                var percent = data.data;
+                if (percent != 0) {
+                    progress = percent;
+                    element.progress('demo', progress + '%');
+                }
+                console.log(percent);
+                $('#progress').attr("lay-percent", percent);
+                if (data.data != null && dataCount > 0){
+                    //间隔2s
+                    if (data.data == 0){
+                        dataCount --;
+                    }
+                    setTimeout(getApi, 2000, element);
+                }
+            }
+        })
+    }
 </script>
 </body>
 </html>
