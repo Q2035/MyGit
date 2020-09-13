@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
+import java.util.Date;
 import java.util.List;
 
 @RequestMapping("job/user")
@@ -267,8 +268,12 @@ public class UserController {
             dest.getParentFile().mkdirs();
         }
         //            更改思路
-//            file.transferTo(dest);
-        doFileUpload(file, dest, user);
+        try {
+            file.transferTo(dest);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//        doFileUpload(file, dest, user);
         //        到这里的话正常来说就是提交完成了
 //        更新数据库即可
         jobService.updateJobAndSubmitPerson(user.getId(),jobId);
@@ -278,36 +283,38 @@ public class UserController {
         return result;
     }
 
-    private void doFileUpload(MultipartFile sourceFile, File destFile, User user) {
-        try (BufferedInputStream bufferedInputStream = new BufferedInputStream(sourceFile.getInputStream());
-             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(destFile))) {
-            //        设置上传实体类
-            ProgressEntity progressEntity = new ProgressEntity();
-            progressEntity.setpContentLength(sourceFile.getSize());
-
-            redisUtil.set(UPLOAD_PROGRESS + user.getUsername(), progressEntity);
-            //            这里需要注意
-            byte[] bufferBytes = new byte[1024000];
-            long tempLength;
-            long startTime = System.currentTimeMillis();
-//            只要没有读取到文件尾部，就不断读取
-            while ((tempLength = bufferedInputStream.read(bufferBytes)) != -1) {
-                bufferedOutputStream.write(bufferBytes);
-//                从Redis中获取文件上传进度，并进行更新
-                progressEntity = (ProgressEntity) redisUtil.get(UPLOAD_PROGRESS + user.getUsername());
-                progressEntity.setpBytesRead(progressEntity.getpBytesRead() + tempLength);
-                redisUtil.set(UPLOAD_PROGRESS + user.getUsername(), progressEntity);
-            }
-            logger.info("Time Spent: {} ms", System.currentTimeMillis() - startTime);
-//            一旦上传完成，就将Redis的数据移除
-            redisUtil.remove(UPLOAD_PROGRESS + user.getUsername());
-            bufferedOutputStream.flush();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    private void doFileUpload(MultipartFile sourceFile, File destFile, User user) {
+//        try (BufferedInputStream bufferedInputStream = new BufferedInputStream(sourceFile.getInputStream());
+//             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(destFile))) {
+//            //        设置上传实体类
+//            ProgressEntity progressEntity = new ProgressEntity();
+//            progressEntity.setpContentLength(sourceFile.getSize());
+//
+//            redisUtil.set(UPLOAD_PROGRESS + user.getUsername(), progressEntity);
+//            //            这里需要注意
+//            byte[] bufferBytes = new byte[1024000];
+//            long tempLength;
+//            long startTime = System.currentTimeMillis();
+////            只要没有读取到文件尾部，就不断读取
+//            while ((tempLength = bufferedInputStream.read(bufferBytes)) != -1) {
+//                bufferedOutputStream.write(bufferBytes);
+////                从Redis中获取文件上传进度，并进行更新
+//                progressEntity = (ProgressEntity) redisUtil.get(UPLOAD_PROGRESS + user.getUsername());
+//                logger.info("+++++++++");
+//                logger.info(progressEntity.toString());
+//                progressEntity.setpBytesRead(progressEntity.getpBytesRead() + tempLength);
+//                redisUtil.set(UPLOAD_PROGRESS + user.getUsername(), progressEntity);
+//            }
+//            logger.info("Time Spent: {} ms", System.currentTimeMillis() - startTime);
+////            一旦上传完成，就将Redis的数据移除
+//            redisUtil.remove(UPLOAD_PROGRESS + user.getUsername());
+//            bufferedOutputStream.flush();
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @ResponseBody
     @GetMapping("/progress/{username}")
