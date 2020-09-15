@@ -270,6 +270,8 @@ public class UserController {
         //            更改思路
         try {
             file.transferTo(dest);
+            logger.info("{} upload successfully", user.getUsername());
+            redisUtil.remove(UPLOAD_PROGRESS + user.getUsername());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -322,7 +324,7 @@ public class UserController {
         CommonResult<Integer> commonResult = new CommonResult<>();
         ProgressEntity progressEntity = (ProgressEntity) redisUtil.get(UPLOAD_PROGRESS + username);
         if (progressEntity != null) {
-            logger.info("read {} all {} percent {}", progressEntity.getpBytesRead(), progressEntity.getpContentLength(), ((float) progressEntity.getpBytesRead() / progressEntity.getpContentLength()));
+//            logger.info("read {} all {} percent {}", progressEntity.getpBytesRead(), progressEntity.getpContentLength(), ((float) progressEntity.getpBytesRead() / progressEntity.getpContentLength()));
             commonResult.setAll((int)((float)progressEntity.getpBytesRead() / progressEntity.getpContentLength() * 100), "Get Progress", true);
             return commonResult;
         }

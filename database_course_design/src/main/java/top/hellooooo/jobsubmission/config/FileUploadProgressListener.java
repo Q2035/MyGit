@@ -40,6 +40,12 @@ public class FileUploadProgressListener implements ProgressListener{
     public void update(long l, long l1, int i) {
         User user = (User) session.getAttribute("user");
         ProgressEntity progressEntity = (ProgressEntity) redisUtil.get(UPLOAD_PROGRESS + user.getUsername());
+//        if (progressEntity.getpBytesRead() == progressEntity.getpContentLength()
+//                && progressEntity.getpBytesRead() != 0) {
+//        }
+//        if (l == l1 && l > 0) {
+//            redisUtil.remove(UPLOAD_PROGRESS + user.getUsername());
+//        }
         progressEntity.setpBytesRead(l);
         progressEntity.setpContentLength(l1);
         progressEntity.setpItems(i);

@@ -80,7 +80,7 @@
     </update>
 
     <insert id="setUser" parameterType="User">
-        insert into j_user(username, password) values (#{username},#{password})
+        insert into j_user(username, password,nickname) values (#{username},#{password},#{nickname})
     </insert>
 
     <insert id="setUserRole">

@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void setUserWithRole(User user, Integer roleId) {
-//        只插入用户名和密码
+//        只插入用户名和密码还有昵称
         userMapper.setUser(user);
         User userByUsername = userMapper.getUserByUsername(user.getUsername());
         userMapper.setUserRole(userByUsername.getId(), roleId);
