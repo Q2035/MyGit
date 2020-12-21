@@ -46,7 +46,7 @@ public class IndexController {
 //                这个方法返回当前用户所有未提交并未截止的方法，但是实际使用过程中发现
 //                用户经常会出现同一份作业再次提交的需求
 //                List<Job> jobs = jobService.getCurrentJobByUserId(((User) user).getId());
-                List<Job> jobs = jobService.getUnexpiredJobsByUserId(((User) user).getId());
+                List<Job> jobs = userService.getAllUnExpireJobByUserId(((User) user).getId());
                 List<SubmitPerson>  allJobs = userService.getAllExpiredJobSubmitInfoByUserId(((User) user).getId());
                 model.addAttribute("user", (User)user);
                 model.addAttribute("jobs", jobs);

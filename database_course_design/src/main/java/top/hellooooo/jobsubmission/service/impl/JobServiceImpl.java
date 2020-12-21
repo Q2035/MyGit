@@ -3,6 +3,7 @@ package top.hellooooo.jobsubmission.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import top.hellooooo.jobsubmission.mapper.JobMapper;
+import top.hellooooo.jobsubmission.mapper.UserMapper;
 import top.hellooooo.jobsubmission.pojo.Filename;
 import top.hellooooo.jobsubmission.pojo.Job;
 import top.hellooooo.jobsubmission.pojo.SubmitPerson;
@@ -17,8 +18,11 @@ public class JobServiceImpl implements JobService {
 
     private final JobMapper jobMapper;
 
-    public JobServiceImpl(JobMapper jobMapper) {
+    private final UserMapper userMapper;
+
+    public JobServiceImpl(JobMapper jobMapper, UserMapper userMapper) {
         this.jobMapper = jobMapper;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -53,7 +57,20 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public Job getJobByUserIdAndJobId(Integer id, Integer jobId) {
-        return jobMapper.getJobByUserIdAndJobId(id,jobId);
+        List<User> unSubmitPersonWithJobId = userMapper.getUnSubmitPersonWithJobId(jobId);
+        Job job = jobMapper.getJobByUserIdAndJobId(id, jobId);
+        if (unSubmitPersonWithJobId.size() == 0) {
+            job.setIfSubmit(true);
+            return job;
+        }
+        for (User user : unSubmitPersonWithJobId) {
+            if (user.getId() == id) {
+                job.setIfSubmit(false);
+                break;
+            }
+            job.setIfSubmit(true);
+        }
+        return job;
     }
 
     @Override

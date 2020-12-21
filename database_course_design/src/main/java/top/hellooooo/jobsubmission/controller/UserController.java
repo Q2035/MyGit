@@ -278,7 +278,10 @@ public class UserController {
 //        doFileUpload(file, dest, user);
         //        到这里的话正常来说就是提交完成了
 //        更新数据库即可
-        jobService.updateJobAndSubmitPerson(user.getId(),jobId);
+//        如果未提交则更新状态
+        if (!job.isIfSubmit()) {
+            jobService.updateJobAndSubmitPerson(user.getId(),jobId);
+        }
         result.setMessage("Success!");
         result.setSuccess(true);
         logger.info(result.toString());
